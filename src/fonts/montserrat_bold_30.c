@@ -4,27 +4,19 @@
  * Opts: --bpp 4 --size 30 --no-compress --stride 1 --align 1 --font Montserrat-Bold.ttf --range 1040 --format lvgl -o Montserrat-Bold 30.c
  ******************************************************************************/
 
-#ifdef __has_include
-    #if __has_include("lvgl.h")
-        #ifndef LV_LVGL_H_INCLUDE_SIMPLE
-            #define LV_LVGL_H_INCLUDE_SIMPLE
-        #endif
-    #endif
-#endif
-
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
     #include "lvgl.h"
 #else
-    #include "lvgl/lvgl.h"
+    #include "lvgl.h"
 #endif
 
 
 
-#ifndef MONTSERRAT-BOLD 30
-#define MONTSERRAT-BOLD 30 1
+#ifndef  LV_FONT_MONTSERRAT-BOLD 30
+#define  LV_FONT_MONTSERRAT-BOLD 30 1
 #endif
 
-#if MONTSERRAT-BOLD 30
+#if  LV_FONT_MONTSERRAT-BOLD 30
 
 /*-----------------
  *    BITMAPS

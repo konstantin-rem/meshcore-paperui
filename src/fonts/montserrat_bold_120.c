@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 120 px
  * Bpp: 4
- * Opts: --bpp 4 --size 120 --no-compress --stride 1 --align 1 --font Montserrat-Bold.ttf --range 32-127,160-255,1040-1103,1025,1105 --format lvgl -o montserrat_cyr_bold_120.c
+ * Opts: --bpp 4 --size 120 --no-compress --stride 1 --align 1 --font Montserrat-Bold.ttf --range 32-127,160-255,1040-1103,1025,1105 --format lvgl -o montserrat_bold_120.c
  ******************************************************************************/
 
 #ifdef __has_include
@@ -20,11 +20,11 @@
 
 
 
-#ifndef MONTSERRAT_CYR_BOLD_120
-#define MONTSERRAT_CYR_BOLD_120 1
+#ifndef LV_FONT_MONTSERRAT_BOLD_120
+#define LV_FONT_MONTSERRAT_BOLD_120 1
 #endif
 
-#if MONTSERRAT_CYR_BOLD_120
+#if LV_FONT_MONTSERRAT_BOLD_120
 
 /*-----------------
  *    BITMAPS
@@ -96119,9 +96119,9 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t montserrat_cyr_bold_120 = {
+const lv_font_t LV_FONT_montserrat_bold_120 = {
 #else
-lv_font_t montserrat_cyr_bold_120 = {
+lv_font_t LV_FONT_montserrat_bold_120 = {
 #endif
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
@@ -96144,4 +96144,4 @@ lv_font_t montserrat_cyr_bold_120 = {
 
 
 
-#endif /*#if MONTSERRAT_CYR_BOLD_120*/
+#endif /*#if LV_FONT_MONTSERRAT_BOLD_120*/

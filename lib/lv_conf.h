@@ -8,6 +8,14 @@
 #ifndef LV_CONF_H
 #define LV_CONF_H
 
+/* Option 1: add to existing declare, keeping built-in fonts available */
+#define LV_FONT_CUSTOM_DECLARE \
+    LV_FONT_DECLARE(noto_cyr_24) \
+    LV_FONT_DECLARE(noto_cyr_28) \
+    LV_FONT_DECLARE(montserrat_cyr_bold_30) \
+    LV_FONT_DECLARE(montserrat_cyr_bold_80) \
+    LV_FONT_DECLARE(montserrat_cyr_bold_120)
+
 /*====================
    COLOR SETTINGS
  *====================*/

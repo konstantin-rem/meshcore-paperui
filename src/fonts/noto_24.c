@@ -4556,9 +4556,9 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t LV_FONT_NOTO_24 = {
+const LV_FONT__t NOTO_24 = {
 #else
-lv_font_t LV_FONT_NOTO_24 = {
+lv_font_t NOTO_24 = {
 #endif
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/

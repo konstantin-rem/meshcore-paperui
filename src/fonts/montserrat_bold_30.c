@@ -20,11 +20,11 @@
 
 
 
-#ifndef MONTSERRAT_CYR_BOLD_30
-#define MONTSERRAT_CYR_BOLD_30 1
+#ifndef LV_FONT_MONTSERRAT_BOLD_30
+#define LV_FONT_MONTSERRAT_BOLD_30 1
 #endif
 
-#if MONTSERRAT_CYR_BOLD_30
+#if LV_FONT_MONTSERRAT_BOLD_30
 
 /*-----------------
  *    BITMAPS
@@ -8086,9 +8086,9 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t montserrat_cyr_bold_30 = {
+const lv_font_t LV_FONT_montserrat_bold_30 = {
 #else
-lv_font_t montserrat_cyr_bold_30 = {
+lv_font_t montserrat_bold_30 = {
 #endif
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
@@ -8111,4 +8111,4 @@ lv_font_t montserrat_cyr_bold_30 = {
 
 
 
-#endif /*#if MONTSERRAT_CYR_BOLD_30*/
+#endif /*#if MONTSERRAT_BOLD_30*/

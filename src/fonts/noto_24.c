@@ -4548,7 +4548,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t LV_FONT__t NOTO_24 = {
+const lv_font_t LV_FONT_t NOTO_24 = {
 #else
 lv_font_t lv_font_t NOTO_24 = {
 #endif

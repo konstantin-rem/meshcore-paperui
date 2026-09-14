@@ -16,7 +16,7 @@
 #define LV_FONT_MONTSERRAT_BOLD_80 1
 #endif
 
-#if MONTSERRAT_CYR_BOLD_80
+#if LV_FONT_MONTSERRAT_BOLD_80
 
 /*-----------------
  *    BITMAPS

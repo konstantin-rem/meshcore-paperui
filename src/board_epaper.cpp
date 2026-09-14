@@ -145,59 +145,26 @@ bool keyboard_init() {
 } // namespace detail
 
 void seed_clock_from_rtc() {
-    if (!peri_status[E_PERI_RTC]) {
-        Serial.println("RTC not initialized");
-        return;
-    }
-
+    if (!peri_status[E_PERI_RTC]) return;
     RTC_DateTime dt = rtc.getDateTime();
     Serial.printf("RTC raw: %04d-%02d-%02d %02d:%02d:%02d\n",
-                  dt.getYear(), dt.getMonth(), dt.getDay(),
-                  dt.getHour(), dt.getMinute(), dt.getSecond());
-
-    int year = dt.getYear();
-    int month = dt.getMonth();
-    int day = dt.getDay();
-    int hour = dt.getHour();
-    int minute = dt.getMinute();
-    int second = dt.getSecond();
-
-    // Базовая валидация
-    if (year < 2020 || year > 2099 ||
-        month < 1 || month > 12 ||
-        day < 1 || day > 31 ||
-        hour < 0 || hour > 23 ||
-        minute < 0 || minute > 59 ||
-        second < 0 || second > 59) {
-        Serial.println("Invalid RTC data, skipping time seeding");
-        return;
+        dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+    if (dt.getYear() >= 2020 && dt.getYear() <= 2099) {
+        setenv("TZ", "UTC0", 1);
+        tzset();
+        struct tm t = {};
+        t.tm_year = dt.getYear() - 1900;
+        t.tm_mon  = dt.getMonth() - 1;
+        t.tm_mday = dt.getDay();
+        t.tm_hour = dt.getHour();
+        t.tm_min  = dt.getMinute();
+        t.tm_sec  = dt.getSecond();
+        t.tm_isdst = 0;
+        time_t epoch = mktime(&t);
+        struct timeval tv = { .tv_sec = epoch, .tv_usec = 0 };
+        settimeofday(&tv, NULL);
+        Serial.printf("System clock seeded: epoch=%ld\n", (long)epoch);
     }
-
-    setenv("TZ", "UTC0", 1);
-    tzset();
-
-    struct tm t = {};
-    t.tm_year = year - 1900;
-    t.tm_mon  = month - 1;
-    t.tm_mday = day;
-    t.tm_hour = hour;
-    t.tm_min  = minute;
-    t.tm_sec  = second;
-    t.tm_isdst = 0;
-
-    time_t epoch = mktime(&t);
-    if (epoch == -1) {
-        Serial.println("mktime failed");
-        return;
-    }
-
-    struct timeval tv = { .tv_sec = epoch, .tv_usec = 0 };
-    if (settimeofday(&tv, NULL) != 0) {
-        Serial.println("settimeofday failed");
-        return;
-    }
-
-    Serial.printf("System clock seeded: epoch=%ld\n", (long)epoch);
 }
 
 // ---------- Main init ----------
@@ -350,26 +317,21 @@ int keyboard_read_char() {
     if (now - cardkb_last_poll < cardkb_poll_interval) return -1;
     cardkb_last_poll = now;
 
-    bool mutex_taken = false;
     if (i2c_mutex && xSemaphoreTake(i2c_mutex, pdMS_TO_TICKS(5)) != pdTRUE) {
-        return -1; // не удалось взять мьютекс
+        return -1;
     }
-    mutex_taken = true;
 
-    int result = -1;
     Wire.requestFrom((uint8_t)CARDKB_I2C_ADDR, (uint8_t)1);
     bool available = Wire.available();
     uint8_t raw = available ? Wire.read() : 0;
 
-    if (mutex_taken && i2c_mutex) {
+    if (i2c_mutex) {
         xSemaphoreGive(i2c_mutex);
     }
 
     if (!available) {
         cardkb_error_count++;
         if (cardkb_error_count >= 3) {
-            // небольшая задержка для успокоения шины
-            vTaskDelay(pdMS_TO_TICKS(10));
             Wire.begin(BOARD_SDA, BOARD_SCL);
             Wire.setTimeOut(50);
             cardkb_poll_interval = 500;
@@ -382,9 +344,7 @@ int keyboard_read_char() {
     cardkb_error_count = 0;
     cardkb_poll_interval = 50;
 
-    if (raw == 0) {
-        return -1; // нет нажатия
-    }
+    if (raw == 0) return -1;
 
     switch (raw) {
         case CARDKB_KEY_UP: return CARDKB_KEY_PREV;
@@ -393,8 +353,7 @@ int keyboard_read_char() {
         case CARDKB_KEY_RIGHT: return CARDKB_KEY_RIGHT_NAV;
         case CARDKB_KEY_ENTER: return '\r';
         case CARDKB_KEY_BS: return '\b';
-        // если нужно различать DEL и BS, измените здесь
-        case CARDKB_KEY_DEL: return 0x7F; // DEL как ASCII 127
+        case CARDKB_KEY_DEL: return '\b';
         case CARDKB_KEY_ESC: return 0x1B;
         case CARDKB_KEY_TAB: return 0x09;
         default:
@@ -404,3 +363,15 @@ int keyboard_read_char() {
             return -1;
     }
 }
+
+void keyboard_set_backlight(uint8_t level) {
+    (void)level;
+}
+
+uint8_t keyboard_get_backlight() {
+    return 0;
+}
+
+} // namespace board
+
+#endif // BOARD_EPAPER

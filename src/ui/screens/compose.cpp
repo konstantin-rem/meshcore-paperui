@@ -10,6 +10,8 @@
 #include "../../sd_log.h"
 #include "../../mesh/mesh_task.h"
 #include <helpers/AdvertDataHelpers.h>
+#include "../components/ru_keyboard.h"
+
 
 namespace ui::screen::compose {
 
@@ -34,7 +36,8 @@ static lv_obj_t* filter_tab_labels[3] = {};
 static lv_obj_t* first_picker_target = NULL;
 static int saved_refresh_mode = UI_REFRESH_MODE_NORMAL;
 static bool refresh_mode_overridden = false;
-
+static bool kb_ru_mode  = false;   // false = EN, true = RU
+static bool kb_shift    = false;   // состояние Shift для русского режима
 static char recipient_name[32] = {};
 static bool recipient_chosen = false;
 static bool recipient_is_channel = false;
@@ -239,7 +242,75 @@ static void on_kb_event(lv_event_t* e) {
     lv_event_code_t code = lv_event_get_code(e);
     if (code == LV_EVENT_READY) {
         on_send(e);
+        return;
     }
+    if (code != LV_EVENT_VALUE_CHANGED) return;
+
+    lv_obj_t* kbd = (lv_obj_t*)lv_event_get_target(e);
+    uint16_t btn_id = lv_buttonmatrix_get_selected_button(kbd);
+    if (btn_id == LV_BUTTONMATRIX_BUTTON_NONE) return;
+
+    const char* txt = lv_buttonmatrix_get_button_text(kbd, btn_id);
+    if (!txt) return;
+
+    // ── Переключение раскладки EN ↔ RU ──
+    // LVGL не знает "RU"/"EN" и вставляет их как текст — удаляем и переключаем режим
+    if (strcmp(txt, "RU") == 0 || strcmp(txt, "EN") == 0) {
+        // Удаляем вставленный текст (сколько символов реально добавилось)
+        const char* cur = lv_textarea_get_text(ta);
+        int len_after = cur ? (int)strlen(cur) : 0;
+        // Сравниваем с длиной ДО вставки — но мы не знаем её,
+        // поэтому просто удаляем strlen(txt) символов
+        int inserted = (int)strlen(txt);
+        for (int i = 0; i < inserted; i++) {
+            lv_textarea_delete_char(ta);
+        }
+
+        if (strcmp(txt, "RU") == 0) {
+            kb_ru_mode = true;
+            kb_shift = false;
+            lv_keyboard_set_mode(kbd, LV_KEYBOARD_MODE_USER_1);
+        } else {
+            kb_ru_mode = false;
+            kb_shift = false;
+            lv_keyboard_set_mode(kbd, LV_KEYBOARD_MODE_TEXT_LOWER);
+        }
+        return;
+    }
+
+    // ── Shift в русском режиме ──
+    // LVGL не меняет режим для USER-модов, делаем это сами
+    if (kb_ru_mode && strcmp(txt, LV_SYMBOL_UP) == 0) {
+        if (kb_shift) {
+            kb_shift = false;
+            lv_keyboard_set_mode(kbd, LV_KEYBOARD_MODE_USER_1);
+        } else {
+            kb_shift = true;
+            lv_keyboard_set_mode(kbd, LV_KEYBOARD_MODE_USER_2);
+        }
+        return;
+    }
+
+    // ── Возврат из режима цифр ("ABC") ──
+    // LVGL переключает на TEXT_LOWER — если были в русском, возвращаем USER_1
+    if (strcmp(txt, "ABC") == 0) {
+        if (kb_ru_mode) {
+            kb_shift = false;
+            lv_keyboard_set_mode(kbd, LV_KEYBOARD_MODE_USER_1);
+        }
+        return;
+    }
+
+    // ── Авто-нижний регистр после ввода заглавной (one-shot Shift) ──
+    if (kb_ru_mode && kb_shift) {
+        // Кириллический символ в UTF-8 — 2 байта, начинается с 0xD0/0xD1
+        if (strlen(txt) == 2 && (txt[0] == '\xD0' || txt[0] == '\xD1')) {
+            kb_shift = false;
+            lv_keyboard_set_mode(kbd, LV_KEYBOARD_MODE_USER_1);
+        }
+    }
+}
+
 }
 
 static void on_ta_focus(lv_event_t* e) {
@@ -625,6 +696,17 @@ static void create_epaper_editor_panel(lv_obj_t* parent) {
         lv_obj_set_style_radius(kb, 10, LV_PART_ITEMS);
         lv_obj_set_style_anim_duration(kb, 0, LV_PART_ITEMS);
         lv_obj_add_event_cb(kb, on_kb_event, LV_EVENT_ALL, NULL);
+        lv_obj_add_event_cb(kb, on_kb_event, LV_EVENT_ALL, NULL);
+
+        // Регистрируем русские раскладки и переопределяем английские
+        ru_keyboard::register_maps(kb);
+        // Пере-применяем настройки управления (map заменил control-массивы)
+        lv_buttonmatrix_clear_button_ctrl_all(kb, LV_BUTTONMATRIX_CTRL_CLICK_TRIG);
+        // Стартуем в английском режиме
+        kb_ru_mode = false;
+        kb_shift = false;
+        lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_LOWER);
+
     }
 #endif
 
@@ -700,6 +782,9 @@ static void destroy() {
     recipient_channel_idx = 0;
     current_filter = PICK_FILTER_PEOPLE;
     pick_count = 0;
+    kb_ru_mode = false;
+    kb_shift = false;
+
 }
 
 screen_lifecycle_t lifecycle = { create, entry, exit_fn, destroy };

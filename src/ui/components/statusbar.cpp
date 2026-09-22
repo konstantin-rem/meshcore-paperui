@@ -214,6 +214,7 @@ void recreate() {
 }
 
 void show() { if (bar_obj) lv_obj_clear_flag(bar_obj, LV_OBJ_FLAG_HIDDEN); }
-void hide() { if (bar_obj) lv_obj_add_flag(bar_obj, LV_OBJ_FLAG_HIDDEN); }
+void hide() { if (bar_obj) lv_obj_set_hidden(bar_obj, true); }
+
 
 } // namespace ui::statusbar

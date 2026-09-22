@@ -188,7 +188,8 @@ void set_memory_enabled(bool enabled) {
 }
 
 void recreate() {
-    bool was_hidden = bar_obj && lv_obj_has_flag(bar_obj, LV_OBJ_FLAG_HIDDEN);
+    bool was_hidden = bar_obj && lv_obj_is_hidden(bar_obj);
+
 
     if (bar_obj) {
         lv_obj_delete(bar_obj);

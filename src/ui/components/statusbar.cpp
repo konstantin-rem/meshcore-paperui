@@ -150,7 +150,7 @@ lv_obj_t* create() {
     lv_obj_set_style_text_font(lbl_gps, sb_font, LV_PART_MAIN);
     lv_obj_set_style_text_color(lbl_gps, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_label_set_text(lbl_gps, LV_SYMBOL_GPS);
-    lv_obj_add_flag(lbl_gps, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_hidden(lbl_gps, true);
 
     spacer = lv_obj_create(bar_obj);
     lv_obj_set_size(spacer, 0, 0);

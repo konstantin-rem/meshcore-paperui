@@ -308,7 +308,11 @@ lv_obj_t* scroll_list(lv_obj_t* parent) {
     lv_obj_set_style_pad_gap(list, 0, LV_PART_MAIN);
     lv_obj_set_flex_flow(list, LV_FLEX_FLOW_COLUMN);
     // Disable elastic bounce and scroll momentum — bad on e-ink
-    lv_obj_clear_flag(list, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM));
+    // Отключаем упругую прокрутку и инерцию (momentum)
+    lv_scrollbar_set_mode(list, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_clear_flag(list, LV_OBJ_FLAG_SCROLL_MOMENTUM);  // если компилятор ещё ругается — см. ниже
+    lv_obj_clear_flag(list, LV_OBJ_FLAG_SCROLL_ELASTIC);
+
     return list;
 }
 

@@ -158,7 +158,8 @@ lv_obj_t* create() {
     lv_obj_set_style_bg_opa(spacer, LV_OPA_0, LV_PART_MAIN);
     lv_obj_set_style_border_width(spacer, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(spacer, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(spacer, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollable(spacer, false);
+
 
     lbl_memory = lv_label_create(bar_obj);
     lv_obj_set_style_text_font(lbl_memory, sb_font, LV_PART_MAIN);

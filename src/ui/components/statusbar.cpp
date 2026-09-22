@@ -213,7 +213,8 @@ void recreate() {
     }
 }
 
-void show() { if (bar_obj) lv_obj_clear_flag(bar_obj, LV_OBJ_FLAG_HIDDEN); }
+void show() {
+    if (bar_obj) lv_obj_set_hidden(bar_obj, false); }
 void hide() { if (bar_obj) lv_obj_set_hidden(bar_obj, true); }
 
 

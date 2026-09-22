@@ -150,7 +150,7 @@ void seed_clock_from_rtc() {
     Serial.printf("RTC raw: %04d-%02d-%02d %02d:%02d:%02d\n",
         dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
     if (dt.getYear() >= 2020 && dt.getYear() <= 2099) {
-        setenv("TZ", "UTC0", 1);
+        setenv("TZ", "UTC3", 1);
         tzset();
         struct tm t = {};
         t.tm_year = dt.getYear() - 1900;

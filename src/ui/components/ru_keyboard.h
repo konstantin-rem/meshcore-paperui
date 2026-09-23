@@ -4,7 +4,7 @@
 
 namespace ru_keyboard {
 
-// ── Карты кнопок ──
+static const char* RU_KB_BTN_LAYOUT = "layout";
 
 // EN нижний регистр (переопределяем дефолт, добавляем кнопку "RU")
 static const char* en_lower_map[] = {

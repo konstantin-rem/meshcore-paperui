@@ -34,7 +34,7 @@ static void set_label_visible(lv_obj_t* label, bool visible) {
     if (visible) {
         lv_obj_clear_flag(label, LV_OBJ_FLAG_HIDDEN);
     } else {
-        lv_obj_add_flag(label, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_hidden(label, true);
     }
 }
 

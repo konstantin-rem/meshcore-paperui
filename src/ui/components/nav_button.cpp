@@ -293,7 +293,7 @@ lv_obj_t* content_area(lv_obj_t* parent) {
     lv_obj_set_style_bg_opa(area, LV_OPA_0, LV_PART_MAIN);
     lv_obj_set_style_border_width(area, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(area, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(area, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollable(area, false);
     return area;
 }
 

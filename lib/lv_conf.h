@@ -21,11 +21,11 @@
  *====================*/
 
 #if defined(BOARD_TDECK)
-/** Color depth: 16 — RGB565 for TFT */
-#define LV_COLOR_DEPTH 16
+/** TFT: RGB565 (16-bit) */
+#define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_NATIVE
 #else
-/** Color depth: 8 — matches LV_COLOR_FORMAT_L8 for e-ink grayscale */
-#define LV_COLOR_DEPTH 8
+/** E-ink: L8 (8-bit grayscale) */
+#define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_L8
 #endif
 
 /*=========================

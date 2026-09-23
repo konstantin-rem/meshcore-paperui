@@ -144,7 +144,8 @@ lv_obj_t* create() {
     lv_obj_set_style_text_font(lbl_ble, sb_font, LV_PART_MAIN);
     lv_obj_set_style_text_color(lbl_ble, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_label_set_text(lbl_ble, LV_SYMBOL_BLUETOOTH);
-    lv_obj_add_flag(lbl_ble, true);
+    lv_obj_set_hidden(lbl_ble, true);
+
 
     lbl_gps = lv_label_create(bar_obj);
     lv_obj_set_style_text_font(lbl_gps, sb_font, LV_PART_MAIN);

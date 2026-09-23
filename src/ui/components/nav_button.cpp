@@ -4,6 +4,11 @@
 #include "../ui_theme.h"
 #include "../../nvs_param.h"
 
+// Все флаги, у которых есть современные сеттеры (HIDDEN, SCROLLABLE, CLICKABLE),
+// уже заменены. Оставшиеся (EVENT_BUBBLE, SCROLL_ELASTIC, SCROLL_MOMENTUM)
+// не имеют аналогов, поэтому подавляем deprecated-предупреждение для всего файла.
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 namespace ui::nav {
 
 static bool hit_area_debug_state = false;
@@ -136,7 +141,7 @@ lv_obj_t* back_button_actions_ex(lv_obj_t* parent, const char* title, lv_event_c
                                  lv_obj_t** first_action_label_out, lv_obj_t** second_action_label_out) {
     return back_button_three_actions_ex(parent, title, back_cb,
                                         first_action_text, first_action_cb, first_action_user_data,
-                                        second_action_text, second_action_cb, second_action_user_data,
+                                        second_action_text, second_action_cb, second_user_data,
                                         NULL, NULL, NULL,
                                         first_action_label_out, second_action_label_out, NULL);
 }
@@ -225,16 +230,9 @@ lv_obj_t* menu_item(lv_obj_t* parent, const void* icon_src, const char* label_te
     lv_obj_set_size(cont, lv_pct(100), lv_pct(100));
     lv_obj_set_pos(cont, 0, 0);
     lv_obj_add_style(cont, &ui::theme::style_menu_row, LV_PART_MAIN);
-    
-    // Используем современные сеттеры
     lv_obj_set_scrollable(cont, false);
     lv_obj_set_clickable(cont, false);
-
-    // Подавляем deprecated-предупреждение ТОЛЬКО для EVENT_BUBBLE
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     lv_obj_add_flag(cont, LV_OBJ_FLAG_EVENT_BUBBLE);
-#pragma GCC diagnostic pop
 
     (void)icon_src;
 
@@ -260,16 +258,9 @@ lv_obj_t* toggle_item(lv_obj_t* parent, const char* label_text, const char* valu
     lv_obj_set_size(cont, lv_pct(100), lv_pct(100));
     lv_obj_set_pos(cont, 0, 0);
     lv_obj_add_style(cont, &ui::theme::style_menu_row, LV_PART_MAIN);
-
-    // Современные сеттеры
     lv_obj_set_scrollable(cont, false);
     lv_obj_set_clickable(cont, false);
-
-    // Подавление предупреждения для EVENT_BUBBLE
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     lv_obj_add_flag(cont, LV_OBJ_FLAG_EVENT_BUBBLE);
-#pragma GCC diagnostic pop
 
     lv_obj_t* lbl = lv_label_create(cont);
     lv_obj_set_style_text_font(lbl, UI_FONT_TITLE, LV_PART_MAIN);
@@ -325,12 +316,7 @@ lv_obj_t* scroll_list(lv_obj_t* parent) {
     lv_obj_set_style_pad_row(list, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_gap(list, 0, LV_PART_MAIN);
     lv_obj_set_flex_flow(list, LV_FLEX_FLOW_COLUMN);
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     lv_obj_clear_flag(list, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM));
-#pragma GCC diagnostic pop
-
     return list;
 }
 
@@ -345,3 +331,4 @@ void set_hit_area_debug(bool enabled) {
 }
 
 } // namespace ui::nav
+

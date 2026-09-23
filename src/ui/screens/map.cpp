@@ -192,7 +192,7 @@ static void draw_vline_thick(int x, int thickness, uint8_t color) {
 static void hide_contact_overlays() {
     for (int i = 0; i < 32; i++) {
         if (contact_taps[i]) lv_obj_add_flag(contact_taps[i], LV_OBJ_FLAG_HIDDEN);
-        if (contact_name_labels[i]) lv_obj_add_flag(contact_name_labels[i], LV_OBJ_FLAG_HIDDEN);
+        if (contact_name_labels[i]) lv_obj_set_hidden(contact_name_labels[i], LV_OBJ_FLAG_HIDDEN);
     }
 }
 

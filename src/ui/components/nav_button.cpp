@@ -307,7 +307,7 @@ lv_obj_t* scroll_list(lv_obj_t* parent) {
     lv_obj_set_style_pad_row(list, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_gap(list, 0, LV_PART_MAIN);
     lv_obj_set_flex_flow(list, LV_FLEX_FLOW_COLUMN);
-    lv_scrollbar_set_mode(list, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scrollbar_mode(list, LV_SCROLLBAR_MODE_OFF);
     
     return list;
 }

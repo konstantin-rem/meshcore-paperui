@@ -137,7 +137,7 @@ namespace board {
 
 #include <driver/i2c.h>
 #include <epdiy.h>
-#include "TouchDrvGT911.hpp"
+#include "TouchDrv.hpp"
 #include <SensorPCF8563.hpp>
 #define XPOWERS_CHIP_BQ25896
 #include <XPowersLib.h>

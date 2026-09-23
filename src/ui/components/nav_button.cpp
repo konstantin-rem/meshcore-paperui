@@ -225,9 +225,16 @@ lv_obj_t* menu_item(lv_obj_t* parent, const void* icon_src, const char* label_te
     lv_obj_set_size(cont, lv_pct(100), lv_pct(100));
     lv_obj_set_pos(cont, 0, 0);
     lv_obj_add_style(cont, &ui::theme::style_menu_row, LV_PART_MAIN);
+    
+    // Используем современные сеттеры
     lv_obj_set_scrollable(cont, false);
     lv_obj_set_clickable(cont, false);
+
+    // Подавляем deprecated-предупреждение ТОЛЬКО для EVENT_BUBBLE
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     lv_obj_add_flag(cont, LV_OBJ_FLAG_EVENT_BUBBLE);
+#pragma GCC diagnostic pop
 
     (void)icon_src;
 
@@ -253,9 +260,16 @@ lv_obj_t* toggle_item(lv_obj_t* parent, const char* label_text, const char* valu
     lv_obj_set_size(cont, lv_pct(100), lv_pct(100));
     lv_obj_set_pos(cont, 0, 0);
     lv_obj_add_style(cont, &ui::theme::style_menu_row, LV_PART_MAIN);
+
+    // Современные сеттеры
     lv_obj_set_scrollable(cont, false);
     lv_obj_set_clickable(cont, false);
+
+    // Подавление предупреждения для EVENT_BUBBLE
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     lv_obj_add_flag(cont, LV_OBJ_FLAG_EVENT_BUBBLE);
+#pragma GCC diagnostic pop
 
     lv_obj_t* lbl = lv_label_create(cont);
     lv_obj_set_style_text_font(lbl, UI_FONT_TITLE, LV_PART_MAIN);

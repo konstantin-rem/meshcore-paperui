@@ -127,7 +127,7 @@ lv_obj_t* create() {
     lv_obj_set_style_bg_color(bar_obj, lv_color_hex(EPD_COLOR_BG), LV_PART_MAIN);
     lv_obj_set_style_border_width(bar_obj, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(bar_obj, UI_STATUSBAR_PAD, LV_PART_MAIN);
-    lv_obj_clear_flag(bar_obj, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollable(bar_obj, false);
     lv_obj_set_flex_flow(bar_obj, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(bar_obj, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_column(bar_obj, UI_STATUSBAR_COL_PAD, LV_PART_MAIN);

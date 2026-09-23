@@ -141,7 +141,8 @@ lv_obj_t* back_button_actions_ex(lv_obj_t* parent, const char* title, lv_event_c
                                  lv_obj_t** first_action_label_out, lv_obj_t** second_action_label_out) {
     return back_button_three_actions_ex(parent, title, back_cb,
                                         first_action_text, first_action_cb, first_action_user_data,
-                                        second_action_text, second_action_cb, second_user_data,
+                                        second_action_text, second_action_cb, second_action_user_data,
+
                                         NULL, NULL, NULL,
                                         first_action_label_out, second_action_label_out, NULL);
 }

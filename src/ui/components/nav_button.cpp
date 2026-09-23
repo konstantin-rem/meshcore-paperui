@@ -32,13 +32,8 @@ static lv_obj_t* create_hit_row(lv_obj_t* parent, lv_event_cb_t cb, void* user_d
     lv_obj_t* hit = lv_obj_create(parent);
     lv_obj_set_size(hit, lv_pct(100), UI_MENU_ITEM_HEIGHT);
     style_hit_area(hit);
-    
-    // ИСПРАВЛЕНО: вместо clear_flag
     lv_obj_set_scrollable(hit, false);
-    
-    // ИСПРАВЛЕНО: вместо add_flag
     lv_obj_set_clickable(hit, true);
-    
     lv_obj_add_event_cb(hit, cb, LV_EVENT_CLICKED, user_data);
     lv_obj_set_ext_click_area(hit, UI_EXT_CLICK_LIST);
     ui::port::keyboard_focus_register(hit);
@@ -49,17 +44,12 @@ static lv_obj_t* create_back_hit_row(lv_obj_t* parent, lv_event_cb_t cb, void* u
     lv_obj_t* hit = lv_obj_create(parent);
     lv_obj_set_size(hit, LV_SIZE_CONTENT, UI_BACK_BTN_HEIGHT);
     style_hit_area(hit);
-    
-    // ИСПРАВЛЕНО
     lv_obj_set_scrollable(hit, false);
-    
     if (cb) {
-        // ИСПРАВЛЕНО
         lv_obj_set_clickable(hit, true);
         lv_obj_add_event_cb(hit, cb, LV_EVENT_CLICKED, user_data);
         ui::port::keyboard_focus_register(hit);
     } else {
-        // ИСПРАВЛЕНО
         lv_obj_set_clickable(hit, false);
     }
     lv_obj_set_ext_click_area(hit, UI_EXT_CLICK_BACK);
@@ -71,7 +61,6 @@ static void create_back_content(lv_obj_t* parent, const char* title) {
     lv_obj_set_style_text_font(arrow, UI_FONT_NAV, LV_PART_MAIN);
     lv_obj_set_style_text_color(arrow, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_label_set_text(arrow, LV_SYMBOL_LEFT);
-    // LV_OBJ_FLAG_EVENT_BUBBLE не имеет прямого сеттера, оставляем как есть — это не deprecated
     lv_obj_add_flag(arrow, LV_OBJ_FLAG_EVENT_BUBBLE);
 
     lv_obj_t* label = lv_label_create(parent);
@@ -87,11 +76,8 @@ static lv_obj_t* create_nav_action_button(lv_obj_t* parent, const char* action_t
     lv_obj_t* action = lv_obj_create(parent);
     lv_obj_set_size(action, LV_SIZE_CONTENT, UI_ACTION_BTN_H);
     lv_obj_add_style(action, &ui::theme::style_nav_action, LV_PART_MAIN);
-    
-    // ИСПРАВЛЕНО
     lv_obj_set_scrollable(action, false);
     lv_obj_set_clickable(action, true);
-    
     lv_obj_add_event_cb(action, action_cb, LV_EVENT_CLICKED, action_user_data);
     lv_obj_set_ext_click_area(action, UI_EXT_CLICK_ACTION);
     ui::port::keyboard_focus_register(action);
@@ -124,11 +110,8 @@ lv_obj_t* back_button(lv_obj_t* parent, const char* title, lv_event_cb_t cb) {
     lv_obj_set_style_pad_top(row, UI_BACK_BTN_PAD_TOP, LV_PART_MAIN);
     lv_obj_set_style_pad_bottom(row, UI_BACK_BTN_PAD_BOTTOM, LV_PART_MAIN);
     lv_obj_set_style_pad_column(row, UI_BACK_BTN_COL_PAD, LV_PART_MAIN);
-    
-    // ИСПРАВЛЕНО: раздельные сеттеры вместо clear_flag с маской
     lv_obj_set_scrollable(row, false);
     lv_obj_set_clickable(row, false);
-    
     lv_obj_add_flag(row, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(row, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -138,7 +121,25 @@ lv_obj_t* back_button(lv_obj_t* parent, const char* title, lv_event_cb_t cb) {
     return hit;
 }
 
-// Остальные функции-обёртки (back_button_action_ex, back_button_actions_ex и т.д.) оставляем без изменений — они только вызывают другие функции
+lv_obj_t* back_button_action_ex(lv_obj_t* parent, const char* title, lv_event_cb_t back_cb,
+                                const char* action_text, lv_event_cb_t action_cb, void* action_user_data,
+                                lv_obj_t** action_label_out) {
+    return back_button_actions_ex(parent, title, back_cb,
+                                  NULL, NULL, NULL,
+                                  action_text, action_cb, action_user_data,
+                                  NULL, action_label_out);
+}
+
+lv_obj_t* back_button_actions_ex(lv_obj_t* parent, const char* title, lv_event_cb_t back_cb,
+                                 const char* first_action_text, lv_event_cb_t first_action_cb, void* first_action_user_data,
+                                 const char* second_action_text, lv_event_cb_t second_action_cb, void* second_action_user_data,
+                                 lv_obj_t** first_action_label_out, lv_obj_t** second_action_label_out) {
+    return back_button_three_actions_ex(parent, title, back_cb,
+                                        first_action_text, first_action_cb, first_action_user_data,
+                                        second_action_text, second_action_cb, second_action_user_data,
+                                        NULL, NULL, NULL,
+                                        first_action_label_out, second_action_label_out, NULL);
+}
 
 lv_obj_t* back_button_three_actions_ex(lv_obj_t* parent, const char* title, lv_event_cb_t back_cb,
                                        const char* first_action_text, lv_event_cb_t first_action_cb, void* first_action_user_data,
@@ -152,10 +153,7 @@ lv_obj_t* back_button_three_actions_ex(lv_obj_t* parent, const char* title, lv_e
     lv_obj_set_size(row, lv_pct(UI_OUTER_WIDTH_PCT), UI_BACK_BTN_HEIGHT);
     lv_obj_set_style_bg_opa(row, LV_OPA_0, LV_PART_MAIN);
     lv_obj_set_style_border_width(row, 0, LV_PART_MAIN);
-    
-    // ИСПРАВЛЕНО
     lv_obj_set_scrollable(row, false);
-    
     lv_obj_set_style_pad_all(row, 0, LV_PART_MAIN);
 
     lv_obj_t* back = lv_obj_create(row);
@@ -168,11 +166,8 @@ lv_obj_t* back_button_three_actions_ex(lv_obj_t* parent, const char* title, lv_e
     lv_obj_set_style_pad_top(back, UI_BACK_BTN_PAD_TOP, LV_PART_MAIN);
     lv_obj_set_style_pad_bottom(back, UI_BACK_BTN_PAD_BOTTOM, LV_PART_MAIN);
     lv_obj_set_style_pad_column(back, UI_BACK_BTN_COL_PAD, LV_PART_MAIN);
-    
-    // ИСПРАВЛЕНО
     lv_obj_set_scrollable(back, false);
     lv_obj_set_clickable(back, true);
-    
     lv_obj_add_event_cb(back, back_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_set_ext_click_area(back, UI_EXT_CLICK_BACK);
     ui::port::keyboard_focus_register(back);
@@ -190,11 +185,8 @@ lv_obj_t* back_button_three_actions_ex(lv_obj_t* parent, const char* title, lv_e
     lv_obj_set_style_pad_top(actions, UI_BACK_BTN_PAD_TOP, LV_PART_MAIN);
     lv_obj_set_style_pad_bottom(actions, UI_BACK_BTN_PAD_BOTTOM, LV_PART_MAIN);
     lv_obj_set_style_pad_column(actions, 4, LV_PART_MAIN);
-    
-    // ИСПРАВЛЕНО: раздельные вызовы
     lv_obj_set_scrollable(actions, false);
     lv_obj_set_clickable(actions, false);
-    
     lv_obj_set_flex_flow(actions, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(actions, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
@@ -219,7 +211,123 @@ lv_obj_t* back_button_three_actions_ex(lv_obj_t* parent, const char* title, lv_e
     return row;
 }
 
-// Функции-обёртки back_button_action и др. оставляем как были
+lv_obj_t* back_button_action(lv_obj_t* parent, const char* title, lv_event_cb_t back_cb,
+                             const char* action_text, lv_event_cb_t action_cb, void* action_user_data) {
+    lv_obj_t* label = NULL;
+    back_button_action_ex(parent, title, back_cb, action_text, action_cb, action_user_data, &label);
+    return label;
+}
 
-lv_obj
+lv_obj_t* menu_item(lv_obj_t* parent, const void* icon_src, const char* label_text, lv_event_cb_t cb, void* user_data) {
+    lv_obj_t* hit = create_hit_row(parent, cb, user_data);
 
+    lv_obj_t* cont = lv_obj_create(hit);
+    lv_obj_set_size(cont, lv_pct(100), lv_pct(100));
+    lv_obj_set_pos(cont, 0, 0);
+    lv_obj_add_style(cont, &ui::theme::style_menu_row, LV_PART_MAIN);
+    lv_obj_set_scrollable(cont, false);
+    lv_obj_set_clickable(cont, false);
+    lv_obj_add_flag(cont, LV_OBJ_FLAG_EVENT_BUBBLE);
+
+    (void)icon_src;
+
+    lv_obj_t* lbl = lv_label_create(cont);
+    lv_obj_set_style_text_font(lbl, UI_FONT_TITLE, LV_PART_MAIN);
+    lv_obj_set_style_text_color(lbl, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
+    lv_label_set_text(lbl, label_text);
+    lv_obj_align(lbl, LV_ALIGN_LEFT_MID, UI_MENU_ITEM_INSET, 0);
+
+    lv_obj_t* arrow = lv_label_create(cont);
+    lv_obj_set_style_text_font(arrow, UI_FONT_SMALL, LV_PART_MAIN);
+    lv_obj_set_style_text_color(arrow, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
+    lv_label_set_text(arrow, LV_SYMBOL_RIGHT);
+    lv_obj_align(arrow, LV_ALIGN_RIGHT_MID, -UI_MENU_ITEM_INSET, 0);
+
+    return hit;
+}
+
+lv_obj_t* toggle_item(lv_obj_t* parent, const char* label_text, const char* value, lv_event_cb_t cb, void* user_data) {
+    lv_obj_t* hit = create_hit_row(parent, cb, user_data);
+
+    lv_obj_t* cont = lv_obj_create(hit);
+    lv_obj_set_size(cont, lv_pct(100), lv_pct(100));
+    lv_obj_set_pos(cont, 0, 0);
+    lv_obj_add_style(cont, &ui::theme::style_menu_row, LV_PART_MAIN);
+    lv_obj_set_scrollable(cont, false);
+    lv_obj_set_clickable(cont, false);
+    lv_obj_add_flag(cont, LV_OBJ_FLAG_EVENT_BUBBLE);
+
+    lv_obj_t* lbl = lv_label_create(cont);
+    lv_obj_set_style_text_font(lbl, UI_FONT_TITLE, LV_PART_MAIN);
+    lv_obj_set_style_text_color(lbl, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
+    lv_label_set_text(lbl, label_text);
+    lv_obj_align(lbl, LV_ALIGN_LEFT_MID, UI_MENU_ITEM_INSET, 0);
+
+    lv_obj_t* val = lv_label_create(cont);
+    lv_obj_set_style_text_font(val, UI_FONT_TITLE, LV_PART_MAIN);
+    lv_obj_set_style_text_color(val, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
+    lv_label_set_text(val, value);
+    lv_obj_align(val, LV_ALIGN_RIGHT_MID, -UI_MENU_ITEM_INSET, 0);
+
+    return val;
+}
+
+lv_obj_t* text_button(lv_obj_t* parent, const char* text, lv_event_cb_t cb, void* user_data) {
+    lv_obj_t* btn = lv_obj_create(parent);
+    lv_obj_set_size(btn, lv_pct(85), UI_TEXT_BTN_HEIGHT);
+    lv_obj_add_style(btn, &ui::theme::style_text_button, LV_PART_MAIN);
+    lv_obj_set_scrollable(btn, false);
+    lv_obj_set_clickable(btn, true);
+    lv_obj_add_event_cb(btn, cb, LV_EVENT_CLICKED, user_data);
+    lv_obj_set_ext_click_area(btn, UI_EXT_CLICK_ACTION);
+    ui::port::keyboard_focus_register(btn);
+
+    lv_obj_t* lbl = lv_label_create(btn);
+    lv_obj_set_style_text_font(lbl, UI_FONT_TITLE, LV_PART_MAIN);
+    lv_obj_set_style_text_color(lbl, lv_color_hex(EPD_COLOR_PROMPT_TXT), LV_PART_MAIN);
+    lv_label_set_text(lbl, text);
+    lv_obj_center(lbl);
+
+    return btn;
+}
+
+lv_obj_t* content_area(lv_obj_t* parent) {
+    lv_obj_t* area = lv_obj_create(parent);
+    lv_obj_set_size(area, lv_pct(100), lv_pct(100));
+    lv_obj_set_style_bg_opa(area, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_style_border_width(area, 0, LV_PART_MAIN);
+    lv_obj_set_style_pad_all(area, 0, LV_PART_MAIN);
+    lv_obj_set_scrollable(area, false);
+    return area;
+}
+
+lv_obj_t* scroll_list(lv_obj_t* parent) {
+    lv_obj_t* list = lv_obj_create(parent);
+    lv_obj_set_size(list, lv_pct(100), lv_pct(100));
+    lv_obj_set_style_bg_opa(list, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_style_border_width(list, 0, LV_PART_MAIN);
+    ui::theme::style_scrollbar_hint(list);
+    lv_obj_set_style_pad_all(list, 0, LV_PART_MAIN);
+    lv_obj_set_style_pad_row(list, 0, LV_PART_MAIN);
+    lv_obj_set_style_pad_gap(list, 0, LV_PART_MAIN);
+    lv_obj_set_flex_flow(list, LV_FLEX_FLOW_COLUMN);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    lv_obj_clear_flag(list, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM));
+#pragma GCC diagnostic pop
+
+    return list;
+}
+
+bool hit_area_debug_enabled() {
+    ensure_hit_area_debug_loaded();
+    return hit_area_debug_state;
+}
+
+void set_hit_area_debug(bool enabled) {
+    hit_area_debug_state = enabled;
+    hit_area_debug_loaded = true;
+}
+
+} // namespace ui::nav

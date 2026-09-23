@@ -32,7 +32,7 @@ static void set_label_text_if_changed(lv_obj_t* label, char* cache, size_t cache
 static void set_label_visible(lv_obj_t* label, bool visible) {
     if (!label) return;
     if (visible) {
-        lv_obj_clear_flag(label, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_hidden(label, false);
     } else {
         lv_obj_set_hidden(label, true);
     }

@@ -311,8 +311,6 @@ static void on_kb_event(lv_event_t* e) {
     }
 }
 
-}
-
 static void on_ta_focus(lv_event_t* e) {
     enable_typing_refresh_mode();
     if (kb) lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);

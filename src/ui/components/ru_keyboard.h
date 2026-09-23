@@ -45,9 +45,9 @@ static const char* ru_upper_map[] = {
 // ── Control-массивы ──
 // EN: 10 + 9 + 9 + 4 = 32 кнопки
 #define NR LV_BUTTONMATRIX_CTRL_NO_REPEAT
-#define CK NR | LV_BUTTONMATRIX_CTRL_CHECKED
-#define W2 NR | LV_BUTTONMATRIX_CTRL_WIDTH_2
-#define W6 NR | LV_BUTTONMATRIX_CTRL_WIDTH_6
+#define CK (lv_buttonmatrix_ctrl_t)(NR | LV_BUTTONMATRIX_CTRL_CHECKED)
+#define W2 (lv_buttonmatrix_ctrl_t)(NR | LV_BUTTONMATRIX_CTRL_WIDTH_2)
+#define W6 (lv_buttonmatrix_ctrl_t)(NR | LV_BUTTONMATRIX_CTRL_WIDTH_6)
 
 static const lv_buttonmatrix_ctrl_t en_ctrl[] = {
     NR,NR,NR,NR,NR,NR,NR,NR,NR,NR,            // row 1: 10

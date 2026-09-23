@@ -273,7 +273,7 @@ lv_obj_t* text_button(lv_obj_t* parent, const char* text, lv_event_cb_t cb, void
     lv_obj_set_size(btn, lv_pct(85), UI_TEXT_BTN_HEIGHT);
     lv_obj_add_style(btn, &ui::theme::style_text_button, LV_PART_MAIN);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_clickable(btn, true);
     lv_obj_add_event_cb(btn, cb, LV_EVENT_CLICKED, user_data);
     lv_obj_set_ext_click_area(btn, UI_EXT_CLICK_ACTION);
     ui::port::keyboard_focus_register(btn);

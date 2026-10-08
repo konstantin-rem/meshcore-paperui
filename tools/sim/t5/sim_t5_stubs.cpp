@@ -85,7 +85,7 @@ namespace model {
         message_count = contact_count = live_position_count = discovery_count = 0;
 
         const char* lang = getenv("SIM_LANG");
-        i18n::set_lang(lang && lang[0] == 's' ? i18n::SL : i18n::EN);
+        i18n::set_lang(lang && lang[0] == 's' ? i18n::RU : i18n::EN);
 
         clock.hour = 10; clock.minute = 54;
         clock.year = 25; clock.month = 6; clock.day = 23;

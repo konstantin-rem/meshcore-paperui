@@ -20,7 +20,7 @@ enum Lang : uint8_t { EN = 0, RU = 1, LANG_COUNT };
 
 enum Str : uint16_t {
     // home menu
-    T_MESSAGES, T_TRAIL, T_STATUS, T_SETTINGS, T_TEAM,
+    T_MESSAGES, T_SETTINGS, T_TRAIL, T_STATUS, T_TEAM,
     // status menu
     T_BATTERY, T_GPS_INFO, T_MESH_INFO,
     // settings menu

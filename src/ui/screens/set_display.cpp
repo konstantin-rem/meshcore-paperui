@@ -116,7 +116,7 @@ static void on_lang(void*) {
 static void create(Handle parent) {
     Handle lst = list(parent);
     lbl_lang = toggle_item(lst, i18n::t(i18n::T_LANGUAGE),
-                           i18n::t(i18n::get_lang() == i18n::SL ? i18n::T_LANG_SL : i18n::T_LANG_EN),
+                           i18n::t(i18n::get_lang() == i18n::RU ? i18n::T_LANG_RU : i18n::T_LANG_EN),
                            on_lang, nullptr);
     char tzb[12]; fmt_tz(tzb, sizeof(tzb), model::clock.tz_offset_hours);
     lbl_tz = toggle_item(lst, i18n::t(i18n::T_TIMEZONE), tzb, on_tz, nullptr);

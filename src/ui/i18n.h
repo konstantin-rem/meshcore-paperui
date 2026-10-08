@@ -58,7 +58,7 @@ enum Str : uint16_t {
     T_WAYPOINTS, T_MARK_HERE, T_NO_WAYPOINTS, T_NAVIGATE, T_SEND, T_SAVE, T_DELETE,
     T_WAYPOINTS_FULL, T_WAYPOINT_MARKED, T_WAYPOINT_SENT, T_WAYPOINT_DELETED, T_SAVED_WAYPOINT,
     // language names (always shown in their own language)
-    T_LANG_EN, T_LANG_SL,
+    T_LANG_EN, T_LANG_RU,
     T_COUNT
 };
 
@@ -91,7 +91,7 @@ inline const char* t(Str id) {
         "Advert (direct)", "Advert (flood)", "Advert sent",
         "Waypoints", "+ Mark here", "No waypoints yet", "Navigate", "Send", "Save", "Delete",
         "Waypoints full", "Waypoint marked", "Waypoint sent", "Waypoint deleted", "Saved to waypoints",
-        "English", "Slovensko",
+        "English", "Русский",
     };
     static const char* const RU_T[T_COUNT] = {
     "Сообщения", "Трек", "Статус", "Настройки", "Команда",

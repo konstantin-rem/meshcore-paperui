@@ -417,11 +417,7 @@ void enter_sleep(uint32_t wake_secs) {
         Serial.flush();
         vTaskDelay(pdMS_TO_TICKS(50));
 
-        // Configure wake on LoRa DIO1 (incoming packet) + touch INT
-        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
-        uint64_t wake_mask = (1ULL << P_LORA_DIO_1) | (1ULL << BOARD_TOUCH_INT);
-        esp_sleep_enable_ext1_wakeup(wake_mask, ESP_EXT1_WAKEUP_ANY_HIGH);
-
+       
         if (wake_secs > 0) {
             esp_sleep_enable_timer_wakeup((uint64_t)wake_secs * 1000000ULL);
         }
@@ -430,6 +426,9 @@ void enter_sleep(uint32_t wake_secs) {
 
         // Woke up
         Serial.println("MESH: woke from sleep");
+        if (ble_is_enabled()) {
+            // Здесь можно добавить логику: если BLE активен — не засыпать снова
+        }
         xSemaphoreGive(mesh_mutex);
     }
 }

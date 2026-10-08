@@ -108,7 +108,7 @@ static void on_lang(void*) {
     uint8_t next = (i18n::get_lang() + 1) % i18n::LANG_COUNT;
     i18n::set_lang(next);
     save_language(next);
-    if (lbl_lang) set_text(lbl_lang, i18n::t(next == i18n::SL ? i18n::T_LANG_SL : i18n::T_LANG_EN));
+    if (lbl_lang) set_text(lbl_lang, i18n::t(next == i18n::RU ? i18n::T_LANG_RU : i18n::T_LANG_EN));
     // Rebuild the whole stack so every open screen re-reads its strings.
     ui::screen_mgr::reload_stack();
 }

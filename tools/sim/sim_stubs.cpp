@@ -46,7 +46,7 @@ namespace model {
         // Default to English; set SIM_LANG=sl to exercise the Lemon font's
         // Slovenian diacritics.
         const char* lang = getenv("SIM_LANG");
-        i18n::set_lang(lang && lang[0] == 's' ? i18n::SL : i18n::EN);
+        i18n::set_lang(lang && lang[0] == 's' ? i18n::RU : i18n::EN);
 
         clock.hour = 10; clock.minute = 54;
         gps.has_fix = true; gps.satellites = 9;

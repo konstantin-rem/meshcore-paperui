@@ -217,9 +217,9 @@ extern "C" {
 // target: 0 = Wio 250x122, 1 = T5 540x960 portrait (scaled UI). lang: 0=EN,1=SL.
 EMSCRIPTEN_KEEPALIVE
 void sim_boot(int target, int lang) {
-    i18n::set_lang(lang ? i18n::SL : i18n::EN);
+    i18n::set_lang(lang ? i18n::RU : i18n::EN);
     model::sim_seed();
-    i18n::set_lang(lang ? i18n::SL : i18n::EN);   // sim_seed() honors SIM_LANG; force the UI choice
+    i18n::set_lang(lang ? i18n::RU : i18n::EN);   // sim_seed() honors SIM_LANG; force the UI choice
     g_now = 1;
     sim_set_millis(g_now);
 

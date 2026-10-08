@@ -16,7 +16,7 @@
 
 namespace i18n {
 
-enum Lang : uint8_t { EN = 0, SL = 1, LANG_COUNT };
+enum Lang : uint8_t { EN = 0, RU = 1, LANG_COUNT };
 
 enum Str : uint16_t {
     // home menu
@@ -93,33 +93,33 @@ inline const char* t(Str id) {
         "Waypoints full", "Waypoint marked", "Waypoint sent", "Waypoint deleted", "Saved to waypoints",
         "English", "Slovensko",
     };
-    static const char* const SL_T[T_COUNT] = {
-        "Sporočila", "Sled", "Stanje", "Nastavitve", "Ekipa",
-        "Baterija", "GPS info", "Mesh info",
-        "Zaslon", "Bluetooth", "GPS nastav.", "Mesh nastav.", "Jezik",
-        "Zasebnost", "GPS v oglasu", "Zvok", "Brenčalo", "Obrni barve", "Opozorila kanala",
-        "Da", "Ne", "OK", "Brez", "Samod.",
-        "GPS", "Modul", "RTC sinhr.",
-        "Vozlišče", "Moč TX", "Deli GPS", "Ponovi", "Radio", "Statistika", "Sosedje",
-        "Stanje", "Zem. širina", "Zem. dolžina", "Sateliti", "Višina", "Hitrost",
-        "Polnost", "Napetost", "Tok",
-        "Začni", "Ustavi", "Počisti", "Ni GPS / sledi", "Ustavljeno", "Čakam fix",
-        "Sledim", "Sledenje vklop.", "Čakam GPS fix", "Sledenje ustavljeno",
-        "Sled počiščena",
-        "Ni sporočil", "Kanal", "GPS kanal", "neprebranih",
-        "Odgovori", "Poslano", "Pošiljanje ni uspelo", "Ni GPS fix", "GPS lokacija",
-        "Že grem", "Da", "Ne", "Rabim pomoč", "Prispel", "Napiši sporočilo",
-        "Zemljevid", "Ni lokacij", "Premakni za kalib.", "Ni cilja",
-        "Časovni pas",
-        "Prenos nastav.", "Deli profil", "Prejmi profil",
-        "Čakam prejemnika", "Iščem...", "Prenašam", "Končano", "Napaka", "Izberi napravo",
-        "Oglas (direkt)", "Oglas (poplava)", "Oglas poslan",
-        "Točke", "+ Označi tukaj", "Ni točk", "Navigiraj", "Pošlji", "Shrani", "Izbriši",
-        "Točke polne", "Točka označena", "Točka poslana", "Točka izbrisana", "Shranjeno med točke",
-        "English", "Slovensko",
-    };
+    static const char* const RU_T[T_COUNT] = {
+    "Сообщения", "Трек", "Статус", "Настройки", "Команда",
+    "Батарея", "Инфо GPS", "Инфо Mesh",
+    "Экран", "Bluetooth", "Настройки GPS", "Настройки Mesh", "Язык",
+    "Конфиденциальность", "GPS в объявлении", "Звук", "Зуммер", "Инверсия", "Оповещения канала",
+    "Вкл", "Выкл", "OK", "Нет", "Авто",
+    "GPS", "Модуль", "Синхр. RTC",
+    "Узел", "Мощность TX", "Делиться GPS", "Повтор", "Радио", "Статистика", "Соседи",
+    "Статус", "Широта", "Долгота", "Спутники", "Высота", "Скорость",
+    "Заряд", "Напряжение", "Ток",
+    "Старт", "Стоп", "Очистить", "Нет GPS / нет трека", "Остановлен", "Ждём фикса",
+    "Отслеживание", "Отслеживание запущено", "Ждём GPS фикса", "Отслеживание остановлено",
+    "Трек очищен",
+    "Сообщений нет", "Канал", "GPS канал", "непрочитано",
+    "Ответить", "Отправлено", "Ошибка отправки", "Нет GPS фикса", "Местоположение GPS",
+    "Уже в пути", "Да", "Нет", "Нужна помощь", "Прибыл", "Введите сообщение",
+    "Карта", "Позиций нет", "Двигайтесь для калибровки", "Цели нет",
+    "Часовой пояс",
+    "Перенос настроек", "Поделиться профилем", "Получить профиль",
+    "Ждём приёмника", "Поиск...", "Передача", "Готово", "Ошибка", "Выберите устройство",
+    "Объявление (прямой)", "Объявление (потоп)", "Объявление отправлено",
+    "Точки", "+ Отметить здесь", "Точек нет", "Навигация", "Отправить", "Сохранить", "Удалить",
+    "Точки заполнены", "Точка отмечена", "Точка отправлена", "Точка удалена", "Сохранено в точках",
+    "English", "Русский",
+};
     if (id >= T_COUNT) return "";
-    return (lang_ref() == SL) ? SL_T[id] : EN_T[id];
+    return (lang_ref() == RU) ? RU_T[id] : EN_T[id];
 }
 
 } // namespace i18n

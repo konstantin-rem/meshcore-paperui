@@ -9,14 +9,13 @@
 #endif
 
 #include <nvs_param.h>
-#include <lvgl.h>          // Работает только для среды t5-epaper
-#include <stdio.h>         // Для Serial.printf
+#include <lvgl.h>          
+#include <stdio.h>         
 
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
-    // ВАЖНО: Никаких extern "C" объявлений здесь!
-    // Типы функций берем из lib/epdiy/src/epdiy.h
+    // Никаких extern "C" объявлений!
 #endif
 
 namespace ui::screen::settings {
@@ -32,32 +31,24 @@ static void on_language_toggle(void*) {
     
     Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
-    // 1. Помечаем экран LVGL как "грязный" для пересчета размеров текста
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
-    // --- ИСПРАВЛЕНИЕ ПОД НОВУЮ СИГНАТУРУ epd_hl_update_area ---
-    
-    // Получаем размеры
     int w = epd_rotated_display_width();
     int h = epd_rotated_display_height();
     
-    // Создаем структуру области
     EpdRect rect;
     rect.x = 0;
     rect.y = 0;
     rect.width = w;
     rect.height = h;
     
-    // Вызов функции: (&hl, MODE, TEMP, RECT)
-    // EPD_DRAW_FULL делает полный рефреш, что критично для смены языка.
-    // Температура 25 - безопасное значение по умолчанию.
-    epd_hl_update_area(&hl, EPD_DRAW_FULL, 25, rect);
+    // ВАЖНО: Используем EPD_DRAW_NORMAL вместо несуществующего EPD_DRAW_FULL.
+    // Температура 25 обязательна для этой сигнатуры.
+    epd_hl_update_area(&hl, EPD_DRAW_NORMAL, 25, rect);
     
-    Serial.println("[UI] Screen refreshed successfully");
-    
+    Serial.println("[UI] E-Paper refreshed (NORMAL mode)");
 #else
-    // Для обычных экранов просто говорим LVGL перерисовать
     lv_refr_exec(); 
 #endif
 }

@@ -28,6 +28,16 @@ static void on_language_toggle(void*) {
 
     // Принудительно помечаем экран как "грязный" для перерисовки всех лейблов
     lv_obj_invalidate(lv_scr_act());
+ // 4. Принудительно обновляем драйвер e-paper
+    #ifdef BOARD_EPAPER
+        // epd_hl_update сам решит, делать ли full refresh или partial update
+        // Мы передаем ему наш глобальный объект состояния hl
+        epd_hl_update(&board::hl); 
+        Serial.println("E-Paper screen refreshed after language change");
+    #else
+        // Для обычных TFT экранов достаточно просто вызвать цикл отрисовки
+        lv_refr_exec(); 
+    #endif
 }
 
 // --- Остальные обработчики (без изменений) ---

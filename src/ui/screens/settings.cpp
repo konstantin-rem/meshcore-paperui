@@ -9,15 +9,16 @@
 #endif
 
 #include <nvs_param.h>
-#include <lvgl.h>          // Работает только когда выбрана среда t5-epaper
+#include <lvgl.h>          // Работает только для среды t5-epaper
 #include <stdio.h>         // Для Serial.printf
 
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
     
-    extern "C" uint16_t epd_rotated_display_width();
-    extern "C" uint16_t epd_rotated_display_height();
+    // ВАЖНО: УБРАЛИ ручное объявление extern "C". 
+    // Тип функции (int) теперь берется напрямую из lib/epdiy/src/epdiy.h.
+    // Это убирает ошибку "ambiguous".
 #endif
 
 namespace ui::screen::settings {
@@ -37,26 +38,32 @@ static void on_language_toggle(void*) {
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
-    // 2. Обновляем драйвер e-paper через новую сигнатуру epdiy
-    uint16_t w = epd_rotated_display_width();
-    uint16_t h = epd_rotated_display_height();
+    // 2. Получаем размеры экрана. 
+    // Теперь тип int (из epdiy.h) совпадает с объявлением, ошибка ambiguous исчезнет.
+    int w = epd_rotated_display_width();
+    int h = epd_rotated_display_height();
     
+    // Создаем структуру области обновления
     EpdRect rect;
     rect.x = 0;
     rect.y = 0;
     rect.width = w;
     rect.height = h;
     
-    // Используем EPD_DRAW_FULL, чтобы гарантированно очистить экран от старого языка
-    // (русский текст шире английского, могут остаться артефакты без полного рефреша)
-    epd_hl_update_area(&hl, &rect, EPD_DRAW_FULL);
-    Serial.println("[UI] E-Paper refreshed (FULL mode)");
+    // 3. Вызываем обновление.
+    // В новых версиях epdiy НЕТ константы EPD_DRAW_FULL.
+    // Режим EPD_DRAW_NORMAL по умолчанию делает полный рефреш экрана для e-paper.
+    // Если нужно форсировать полный рефреш, можно передать nullptr вместо rect, 
+    // но вариант ниже универсален.
+    epd_hl_update_area(&hl, &rect, EPD_DRAW_NORMAL);
+    
+    Serial.println("[UI] E-Paper refreshed (NORMAL mode)");
 #else
     lv_refr_exec(); 
 #endif
 }
 
-// --- Обработчики меню ---
+// --- Обработчики меню (без изменений) ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
 static void on_mesh(void*)    { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
 static void on_display(void*) { ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }

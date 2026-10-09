@@ -17,18 +17,22 @@ static lv_timer_t* timer = NULL;
 
 static void draw_crosshair(int16_t x, int16_t y) {
     if (!crosshair_h || !crosshair_v || !dot) return;
+    
     lv_obj_set_pos(crosshair_h, 0, y);
-    lv_obj_clear_flag(crosshair_h, LV_OBJ_FLAG_HIDDEN);
+    // ИСПРАВЛЕНО: вместо clear_flag используем set_hidden
+    lv_obj_set_hidden(crosshair_h, false); 
+    
     lv_obj_set_pos(crosshair_v, x, 0);
-    lv_obj_clear_flag(crosshair_v, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_hidden(crosshair_v, false);
+    
     lv_obj_set_pos(dot, x - 4, y - 4);
-    lv_obj_clear_flag(dot, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_hidden(dot, false);
 }
 
 static void hide_crosshair() {
-    if (crosshair_h) lv_obj_add_flag(crosshair_h, LV_OBJ_FLAG_HIDDEN);
-    if (crosshair_v) lv_obj_add_flag(crosshair_v, LV_OBJ_FLAG_HIDDEN);
-    if (dot) lv_obj_add_flag(dot, LV_OBJ_FLAG_HIDDEN);
+    if (crosshair_h) lv_obj_set_hidden(crosshair_h, true);
+    if (crosshair_v) lv_obj_set_hidden(crosshair_v, true);
+    if (dot) lv_obj_set_hidden(dot, true);
 }
 
 static void poll_touch(lv_timer_t* t) {
@@ -53,7 +57,8 @@ static void create(ui::kit::Handle parent_kit) {
 
     // Remove all padding so canvas is truly 0,0 based
     lv_obj_set_style_pad_all(parent, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(parent, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
+    // ИСПРАВЛЕНО: используем remove_flag вместо clear_flag
+    lv_obj_remove_flag(parent, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
     lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_COLUMN);
 
     int32_t w = lv_display_get_horizontal_resolution(lv_display_get_default());
@@ -78,7 +83,8 @@ static void create(ui::kit::Handle parent_kit) {
         lv_obj_set_style_bg_opa(line, LV_OPA_40, LV_PART_MAIN);
         lv_obj_set_style_border_width(line, 0, LV_PART_MAIN);
         lv_obj_set_style_pad_all(line, 0, LV_PART_MAIN);
-        lv_obj_clear_flag(line, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+        // ИСПРАВЛЕНО: удаляем сразу два флага через remove_flag
+        lv_obj_remove_flag(line, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
     }
     for (int gy = 40; gy < h; gy += 40) {
         lv_obj_t* line = lv_obj_create(canvas);
@@ -88,7 +94,7 @@ static void create(ui::kit::Handle parent_kit) {
         lv_obj_set_style_bg_opa(line, LV_OPA_40, LV_PART_MAIN);
         lv_obj_set_style_border_width(line, 0, LV_PART_MAIN);
         lv_obj_set_style_pad_all(line, 0, LV_PART_MAIN);
-        lv_obj_clear_flag(line, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+        lv_obj_remove_flag(line, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
     }
 
     // Corner labels showing coordinates at their actual position (40px inward)
@@ -127,16 +133,17 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_bg_color(crosshair_h, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_obj_set_style_border_width(crosshair_h, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(crosshair_h, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(crosshair_h, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
-    lv_obj_add_flag(crosshair_h, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(crosshair_h, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+    // ИСПРАВЛЕНО: скрываем через set_hidden
+    lv_obj_set_hidden(crosshair_h, true); 
 
     crosshair_v = lv_obj_create(canvas);
     lv_obj_set_size(crosshair_v, 1, h);
     lv_obj_set_style_bg_color(crosshair_v, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_obj_set_style_border_width(crosshair_v, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(crosshair_v, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(crosshair_v, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
-    lv_obj_add_flag(crosshair_v, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(crosshair_v, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+    lv_obj_set_hidden(crosshair_v, true);
 
     dot = lv_obj_create(canvas);
     lv_obj_set_size(dot, 9, 9);

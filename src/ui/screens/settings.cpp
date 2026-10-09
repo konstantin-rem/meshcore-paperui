@@ -6,9 +6,7 @@
 
 #ifdef BOARD_WIO_L1
     #include "../../mesh/mesh_task.h"
-    // Для Wio НЕ подключаем nvs_param
 #else
-    // Подключаем nvs_param ТОЛЬКО для ESP32 (T5)
     #include <nvs_param.h>
 #endif
 
@@ -27,7 +25,6 @@ namespace ui::screen::settings {
 
 using namespace ui::kit;
 
-// 👇 ФУНКЦИЯ ЯЗЫКА СУЩЕСТВУЕТ ТОЛЬКО ДЛЯ НЕ-WIO (то есть для T5) 👇
 #ifndef BOARD_WIO_L1
 static void on_language_toggle(void*) {
     i18n::Lang current = i18n::get_lang();
@@ -42,30 +39,27 @@ static void on_language_toggle(void*) {
         lv_obj_invalidate(lv_scr_act());
 
         #ifndef MESHUI_SIM
-            // --- ТОЛЬКО для реальной платы (ESP32 + ePaper) ---
             int w = epd_rotated_display_width();
             int h = epd_rotated_display_height();
             EpdRect rect = {0, 0, w, h};
             epd_hl_update_area(&hl, (enum EpdDrawMode)EPD_MODE_DEFAULT, 25, rect);
             Serial.println("[UI] Screen refreshed (AUTO mode)");
         #else
-            // --- ТОЛЬКО для симулятора (WASM / Host) ---
-            lv_log_print(LV_LOG_LEVEL_INFO, "Settings screen rendered in simulator (no hardware update)\n");
+            // В симуляторе не делаем вызовы драйвера дисплея
+            // Если нужно логирование, используй LV_LOG_INFO, но только если LV_USE_LOG=1 в lv_conf.h
+            // LV_LOG_INFO("Settings screen rendered in simulator (no hardware update)\n");
         #endif
     #else
         Serial.println("[UI] Language changed (No screen refresh needed)");
     #endif
-} // 👈 ЭТА СКОБКА БЫЛА ПРОПУЩЕНА — она закрывает on_language_toggle
+} // <-- Закрывающая скобка для on_language_toggle
 #endif 
 
-
-// --- Универсальные обработчики (работают и на Wio, и на T5) ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
-static void on_mesh(void*)    { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
-static void on_display(void*) { ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }
-static void on_ble(void*)     { ui::screen_mgr::push(SCREEN_SET_BLE, true); }
+static void on_mesh(void*)   { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
+static void on_display(void*){ ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }
+static void on_ble(void*)    { ui::screen_mgr::push(SCREEN_SET_BLE, true); }
 
-// --- Специфичные для Wio обработчики ---
 #ifdef BOARD_WIO_L1
 static void on_battery(void*)   { ui::screen_mgr::push(SCREEN_BATTERY, true); }
 static void on_provision(void*) { ui::screen_mgr::push(SCREEN_PROVISION, true); }
@@ -85,7 +79,6 @@ static void on_advert(void*) {
 }
 #endif
 
-// --- Специфичные для НЕ-Wio (T5) обработчики ---
 #ifndef BOARD_WIO_L1
 static void on_storage(void*) { ui::screen_mgr::push(SCREEN_SET_STORAGE, true); }
 static void on_debug(void*)   { ui::screen_mgr::push(SCREEN_SETTINGS_DEBUG, true); }
@@ -96,7 +89,6 @@ static void create(Handle parent) {
     Handle menu = list(parent);
 
 #ifdef BOARD_WIO_L1
-    // Меню для Wio: БЕЗ языка, БЕЗ Storage/Debug/Device
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     lbl_buzzer = toggle_item(menu, i18n::t(i18n::T_BUZZER),
                              i18n::t(mesh::task::get_buzzer_enabled() ? i18n::T_ON : i18n::T_OFF),
@@ -110,22 +102,19 @@ static void create(Handle parent) {
                              on_advert, nullptr);
     menu_row(menu, i18n::t(i18n::T_PROVISION),     on_provision, nullptr);
 #else
-    // Меню для T5: С языком
     menu_row(menu, i18n::t(i18n::T_LANGUAGE),      on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     menu_row(menu, i18n::t(i18n::T_BLUETOOTH),     on_ble,     nullptr);
     menu_row(menu, i18n::t(i18n::T_GPS_SETTINGS),  on_gps,     nullptr);
     menu_row(menu, i18n::t(i18n::T_MESH_SETTINGS), on_mesh,    nullptr);
 
-    // 👇 ИСКЛЮЧАЕМ проблемные экраны в симуляторе 👇
     #ifndef MESHUI_SIM
-        // Эти пункты показываем ТОЛЬКО на реальной плате
         menu_row(menu, "Storage",       on_storage, nullptr); 
         menu_row(menu, "Debug",          on_debug,   nullptr); 
         menu_row(menu, "Device",         on_device,  nullptr);  
     #else
-        // В симуляторе эти пункты не показываем
-        lv_log_print(LV_LOG_LEVEL_WARN, "Hiding Storage/Debug/Device menu items in simulator\n");
+        // В симуляторе эти пункты скрыты. Можно раскомментировать LV_LOG_INFO, если включено логирование.
+        // LV_LOG_INFO("Hiding Storage/Debug/Device menu items in simulator\n");
     #endif
 #endif
 }

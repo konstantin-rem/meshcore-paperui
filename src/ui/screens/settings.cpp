@@ -50,13 +50,14 @@ static void on_language_toggle(void*) {
             Serial.println("[UI] Screen refreshed (AUTO mode)");
         #else
             // --- ТОЛЬКО для симулятора (WASM / Host) ---
-            // LVGL сам отрисовал кадр в буфер. Никаких вызовов драйверов дисплея!
             lv_log_print(LV_LOG_LEVEL_INFO, "Settings screen rendered in simulator (no hardware update)\n");
         #endif
     #else
         Serial.println("[UI] Language changed (No screen refresh needed)");
     #endif
-}
+} // 👈 ЭТА СКОБКА БЫЛА ПРОПУЩЕНА — она закрывает on_language_toggle
+#endif 
+
 
 // --- Универсальные обработчики (работают и на Wio, и на T5) ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
@@ -109,16 +110,23 @@ static void create(Handle parent) {
                              on_advert, nullptr);
     menu_row(menu, i18n::t(i18n::T_PROVISION),     on_provision, nullptr);
 #else
-    // Меню для T5: С языком, С Storage/Debug/Device
+    // Меню для T5: С языком
     menu_row(menu, i18n::t(i18n::T_LANGUAGE),      on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     menu_row(menu, i18n::t(i18n::T_BLUETOOTH),     on_ble,     nullptr);
     menu_row(menu, i18n::t(i18n::T_GPS_SETTINGS),  on_gps,     nullptr);
     menu_row(menu, i18n::t(i18n::T_MESH_SETTINGS), on_mesh,    nullptr);
-    
-    menu_row(menu, "Storage",       on_storage, nullptr); 
-    menu_row(menu, "Debug",          on_debug,   nullptr); 
-    menu_row(menu, "Device",         on_device,  nullptr);  
+
+    // 👇 ИСКЛЮЧАЕМ проблемные экраны в симуляторе 👇
+    #ifndef MESHUI_SIM
+        // Эти пункты показываем ТОЛЬКО на реальной плате
+        menu_row(menu, "Storage",       on_storage, nullptr); 
+        menu_row(menu, "Debug",          on_debug,   nullptr); 
+        menu_row(menu, "Device",         on_device,  nullptr);  
+    #else
+        // В симуляторе эти пункты не показываем
+        lv_log_print(LV_LOG_LEVEL_WARN, "Hiding Storage/Debug/Device menu items in simulator\n");
+    #endif
 #endif
 }
 
@@ -134,4 +142,3 @@ static void destroy() {
 screen_lifecycle_t lifecycle = { create, entry, exit_fn, destroy };
 
 } // namespace ui::screen::settings
-

@@ -1028,9 +1028,9 @@ static void ensure_row(int idx) {
     lv_obj_set_style_pad_all(metrics_wrap, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_gap(metrics_wrap, SENSOR_METRICS_GAP, LV_PART_MAIN);
     lv_obj_clear_flag(metrics_wrap, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_add_flag(metrics_wrap, LV_OBJ_FLAG_EVENT_BUBBLE);
-    lv_obj_set_flex_flow(metrics_wrap, LV_FLEX_FLOW_ROW_WRAP);
-    lv_obj_add_flag(metrics_wrap, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_scrollable(metrics_wrap, false);
+    lv_obj_set_event_bubble(metrics_wrap, true);
+    lv_obj_set_hidden(metrics_wrap, true);
 
     for (int i = 0; i < (int)(sizeof(card_metric_pills[idx]) / sizeof(card_metric_pills[idx][0])); i++) {
         lv_obj_t* pill = lv_obj_create(metrics_wrap);

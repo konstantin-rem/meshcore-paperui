@@ -7,6 +7,9 @@
 #include "../../mesh/mesh_task.h"
 #endif
 #include <nvs_param.h>
+#include <lvgl.h>          // Объявляет lv_obj_invalidate, lv_scr_act и др.
+#include <stdio.h>
+
 #ifdef BOARD_EPAPER
     #include "board.h" 
     // Гарантируем, что компилятор видит namespace board и переменную hl

@@ -1011,14 +1011,14 @@ static void ensure_row(int idx) {
     lv_obj_set_style_text_font(state, UI_FONT_SMALL, LV_PART_MAIN);
     lv_obj_set_style_text_color(state, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_label_set_text(state, "READY");
-    lv_obj_add_flag(state, LV_OBJ_FLAG_EVENT_BUBBLE);
+    lv_obj_set_event_bubble(state, true);
 
     lv_obj_t* body = lv_label_create(row);
     lv_obj_set_style_text_font(body, UI_FONT_BODY, LV_PART_MAIN);
     lv_obj_set_style_text_color(body, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_obj_set_width(body, lv_pct(100));
     lv_label_set_long_mode(body, LV_LABEL_LONG_WRAP);
-    lv_obj_add_flag(body, LV_OBJ_FLAG_EVENT_BUBBLE);
+    lv_obj_set_event_bubble(body, true);
 
     lv_obj_t* metrics_wrap = lv_obj_create(row);
     lv_obj_set_width(metrics_wrap, lv_pct(100));
@@ -1027,7 +1027,7 @@ static void ensure_row(int idx) {
     lv_obj_set_style_border_width(metrics_wrap, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(metrics_wrap, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_gap(metrics_wrap, SENSOR_METRICS_GAP, LV_PART_MAIN);
-    lv_obj_clear_flag(metrics_wrap, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollable(metrics_wrap, false);
     lv_obj_set_scrollable(metrics_wrap, false);
     lv_obj_set_event_bubble(metrics_wrap, true);
     lv_obj_set_hidden(metrics_wrap, true);

@@ -144,7 +144,8 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_radius(dot, LV_RADIUS_CIRCLE, LV_PART_MAIN);
     lv_obj_set_style_border_width(dot, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(dot, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(dot, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+    lv_obj_set_scrollable(dot, false);
+    lv_obj_set_clickable(dot, false);
     lv_obj_set_hidden(dot, true);
 
     // Coordinate readout

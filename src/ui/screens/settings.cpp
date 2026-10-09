@@ -9,14 +9,13 @@
 #endif
 
 #include <nvs_param.h>
-#include <lvgl.h>          // Теперь эта строка сработает, так как мы собираем для t5-epaper
+#include <lvgl.h>          // Работает только когда выбрана среда t5-epaper
 #include <stdio.h>         // Для Serial.printf
 
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
     
-    // Гарантируем видимость функций размеров экрана
     extern "C" uint16_t epd_rotated_display_width();
     extern "C" uint16_t epd_rotated_display_height();
 #endif
@@ -25,7 +24,6 @@ namespace ui::screen::settings {
 
 using namespace ui::kit;
 
-// --- Обработчик кнопки языка ---
 static void on_language_toggle(void*) {
     i18n::Lang current = i18n::get_lang();
     i18n::Lang next = (current == i18n::Lang::EN) ? i18n::Lang::RU : i18n::Lang::EN;
@@ -35,25 +33,30 @@ static void on_language_toggle(void*) {
     
     Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
-    // 1. Помечаем экран LVGL как "грязный". 
-    // Это критически важно: русский текст шире английского, и лейблы должны пересчитаться.
+    // 1. Помечаем экран LVGL как "грязный" для пересчета размеров текста
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
-    // 2. Принудительно обновляем драйвер e-paper.
-    // ВАЖНО: Используем epd_hl_update_area (новый API epdiy v7)
+    // 2. Обновляем драйвер e-paper через новую сигнатуру epdiy
     uint16_t w = epd_rotated_display_width();
     uint16_t h = epd_rotated_display_height();
     
-    epd_hl_update_area(&hl, 0, 0, w, h);
-    Serial.println("[UI] E-Paper refreshed via update_area");
+    EpdRect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = w;
+    rect.height = h;
+    
+    // Используем EPD_DRAW_FULL, чтобы гарантированно очистить экран от старого языка
+    // (русский текст шире английского, могут остаться артефакты без полного рефреша)
+    epd_hl_update_area(&hl, &rect, EPD_DRAW_FULL);
+    Serial.println("[UI] E-Paper refreshed (FULL mode)");
 #else
-    // Для обычных TFT экранов достаточно стандартного цикла отрисовки LVGL
     lv_refr_exec(); 
 #endif
 }
 
-// --- Остальные обработчики ---
+// --- Обработчики меню ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
 static void on_mesh(void*)    { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
 static void on_display(void*) { ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }

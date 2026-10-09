@@ -145,7 +145,7 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_border_width(dot, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(dot, 0, LV_PART_MAIN);
     lv_obj_clear_flag(dot, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
-    lv_obj_add_flag(dot, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_hidden(dot, true);
 
     // Coordinate readout
     lbl_coords = lv_label_create(canvas);

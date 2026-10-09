@@ -6,9 +6,11 @@
 
 #ifdef BOARD_WIO_L1
     #include "../../mesh/mesh_task.h"
+    // Для Wio НЕ подключаем nvs_param, потому что там нет Preferences.h
+#else
+    // Подключаем nvs_param ТОЛЬКО для плат на базе ESP32 (как T5)
+    #include <nvs_param.h>
 #endif
-
-#include <nvs_param.h>
 
 // 👇 ВОТ ЭТО ИЗМЕНЕНИЕ 👇
 // Подключаем LVGL только если определена плата с экраном (или твой флаг USE_LVGL)
@@ -95,7 +97,6 @@ static void create(Handle parent) {
     Handle menu = list(parent);
 
 #ifdef BOARD_WIO_L1
-    menu_row(menu, i18n::t(i18n::T_LANGUAGE),       on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     lbl_buzzer = toggle_item(menu, i18n::t(i18n::T_BUZZER),
                              i18n::t(mesh::task::get_buzzer_enabled() ? i18n::T_ON : i18n::T_OFF),

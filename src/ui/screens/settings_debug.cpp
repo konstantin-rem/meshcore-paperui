@@ -23,11 +23,8 @@ static void on_memory_toggle(lv_event_t* e) {
 
 static void sync_hit_hint(bool enabled) {
     if (!lbl_hit_hint) return;
-    if (enabled) {
-        lv_obj_clear_flag(lbl_hit_hint, LV_OBJ_FLAG_HIDDEN);
-    } else {
-        lv_obj_add_flag(lbl_hit_hint, LV_OBJ_FLAG_HIDDEN);
-    }
+    // ИСПРАВЛЕНО: вместо add_flag/clear_flag используем set_hidden
+    lv_obj_set_hidden(lbl_hit_hint, !enabled);
 }
 
 static void on_hit_area_toggle(lv_event_t* e) {
@@ -46,6 +43,7 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_t* list = ui::nav::scroll_list(parent);
 
     lbl_hit_areas = ui::nav::toggle_item(list, "Hit Areas", ui::nav::hit_area_debug_enabled() ? "On" : "Off", on_hit_area_toggle, NULL);
+    
     lbl_hit_hint = lv_label_create(list);
     lv_obj_set_width(lbl_hit_hint, lv_pct(100));
     lv_obj_set_style_text_font(lbl_hit_hint, UI_FONT_SMALL, LV_PART_MAIN);
@@ -56,6 +54,7 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_pad_bottom(lbl_hit_hint, 4, LV_PART_MAIN);
     lv_label_set_long_mode(lbl_hit_hint, LV_LABEL_LONG_WRAP);
     lv_label_set_text(lbl_hit_hint, "Hint: outlined rows show the full touch target.");
+    
     sync_hit_hint(ui::nav::hit_area_debug_enabled());
 
     lbl_memory = ui::nav::toggle_item(list, "Memory Bar", ui::statusbar::memory_enabled() ? "On" : "Off", on_memory_toggle, NULL);
@@ -67,7 +66,12 @@ static void create(ui::kit::Handle parent_kit) {
 
 static void entry() {}
 static void exit_fn() {}
-static void destroy() { scr = NULL; lbl_memory = NULL; lbl_hit_areas = NULL; lbl_hit_hint = NULL; }
+static void destroy() { 
+    scr = NULL; 
+    lbl_memory = NULL; 
+    lbl_hit_areas = NULL; 
+    lbl_hit_hint = NULL; 
+}
 
 screen_lifecycle_t lifecycle = { create, entry, exit_fn, destroy };
 

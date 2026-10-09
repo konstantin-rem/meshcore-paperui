@@ -7,7 +7,11 @@
 #include "../../mesh/mesh_task.h"
 #endif
 #include <nvs_param.h>
-#include "../ui/ui_helpers.h"
+#ifdef BOARD_EPAPER
+    #include "board.h" 
+    // Гарантируем, что компилятор видит namespace board и переменную hl
+    using namespace board; 
+#endif
 
 namespace ui::screen::settings {
 
@@ -16,21 +20,22 @@ using namespace ui::kit;
 // --- Обработчик кнопки языка ---
 static void on_language_toggle(void*) {
     i18n::Lang current = i18n::get_lang();
-    // Переключаем: EN(0) <-> RU(1)
     i18n::Lang next = (current == i18n::Lang::EN) ? i18n::Lang::RU : i18n::Lang::EN;
     
     i18n::set_lang(next);
-        
-    // Сохраняем в NVS по новому ID
     nvs_param_set_u8(NVS_ID_LANGUAGE, static_cast<uint8_t>(next));
     
     Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
-    // Принудительно помечаем экран как "грязный" для перерисовки всех лейблов
     lv_obj_invalidate(lv_scr_act());
- // 4. Принудительно обновляем драйвер e-paper
-    // 2. Вызываем обновление экрана через наш хелпер (он сам решит, TFT это или e-paper)
-    ui_refresh_epaper();
+    
+#ifdef BOARD_EPAPER
+    // Теперь компилятор точно знает, что такое board::hl, благодаря using namespace board;
+    epd_hl_update(&hl); 
+    Serial.println("[UI] E-Paper refreshed");
+#else
+    lv_refr_exec();
+#endif
 }
 
 // --- Остальные обработчики (без изменений) ---

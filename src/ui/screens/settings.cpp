@@ -7,6 +7,7 @@
 #include "../../mesh/mesh_task.h"
 #endif
 #include <nvs_param.h>
+#include "../ui/ui_helpers.h"
 
 namespace ui::screen::settings {
 
@@ -19,25 +20,17 @@ static void on_language_toggle(void*) {
     i18n::Lang next = (current == i18n::Lang::EN) ? i18n::Lang::RU : i18n::Lang::EN;
     
     i18n::set_lang(next);
-    
+        
     // Сохраняем в NVS по новому ID
     nvs_param_set_u8(NVS_ID_LANGUAGE, static_cast<uint8_t>(next));
     
-    Serial.printf("Language switched to: %s (saved)\n", 
-                  (next == i18n::Lang::EN) ? "EN" : "RU");
+    Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
     // Принудительно помечаем экран как "грязный" для перерисовки всех лейблов
     lv_obj_invalidate(lv_scr_act());
  // 4. Принудительно обновляем драйвер e-paper
-    #ifdef BOARD_EPAPER
-        // epd_hl_update сам решит, делать ли full refresh или partial update
-        // Мы передаем ему наш глобальный объект состояния hl
-        epd_hl_update(&board::hl); 
-        Serial.println("E-Paper screen refreshed after language change");
-    #else
-        // Для обычных TFT экранов достаточно просто вызвать цикл отрисовки
-        lv_refr_exec(); 
-    #endif
+    // 2. Вызываем обновление экрана через наш хелпер (он сам решит, TFT это или e-paper)
+    ui_refresh_epaper();
 }
 
 // --- Остальные обработчики (без изменений) ---

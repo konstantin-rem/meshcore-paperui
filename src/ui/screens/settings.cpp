@@ -15,7 +15,6 @@
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
-    // Никаких extern "C" объявлений!
 #endif
 
 namespace ui::screen::settings {
@@ -43,16 +42,18 @@ static void on_language_toggle(void*) {
     rect.width = w;
     rect.height = h;
 
-    // ГЛАВНОЕ ИСПРАВЛЕНИЕ: передаем 0 вместо несуществующей константы.
-    // Сигнатура: (state, mode_as_int, temperature, rect)
-    epd_hl_update_area(&hl, 0, 25, rect); 
+    // ГЛАВНОЕ ИСПРАВЛЕНИЕ:
+    // Используем EPD_DRAW_AUTO. Это стандартный режим для авто-подбора типа обновления.
+    // Если эта константа тоже не найдется, открой epd_highlevel.h и скажи, какие там есть имена.
+    epd_hl_update_area(&hl, EPD_DRAW_AUTO, 25, rect); 
     
-    Serial.println("[UI] E-Paper refreshed (mode=0)");
+    Serial.println("[UI] Screen refreshed (AUTO mode)");
 #else
     lv_refr_exec(); 
 #endif
+}
 
-// --- Обработчики меню (без изменений) ---
+// --- Обработчики меню ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
 static void on_mesh(void*)    { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
 static void on_display(void*) { ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }

@@ -43,9 +43,9 @@ void append(lv_obj_t* list, const char* sender, const char* text, uint32_t times
     lv_obj_set_style_bg_opa(wrapper, LV_OPA_0, LV_PART_MAIN);
     lv_obj_set_style_border_width(wrapper, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(wrapper, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(wrapper, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollable(wrapper, false);
     if (msg_idx >= 0) {
-        lv_obj_add_flag(wrapper, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_set_clickable(wrapper, true);
         lv_obj_add_event_cb(wrapper, on_msg_click, LV_EVENT_CLICKED, (void*)(intptr_t)msg_idx);
         ui::port::keyboard_focus_register(wrapper);
     }

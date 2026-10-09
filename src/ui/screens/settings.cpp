@@ -56,7 +56,7 @@ static void on_language_toggle(void*) {
     #else
         Serial.println("[UI] Language changed (No screen refresh needed)");
     #endif
-
+}
 
 // --- Универсальные обработчики (работают и на Wio, и на T5) ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }

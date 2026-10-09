@@ -7,13 +7,16 @@
 #include "../../mesh/mesh_task.h"
 #endif
 #include <nvs_param.h>
-#include <lvgl.h>          // Объявляет lv_obj_invalidate, lv_scr_act и др.
-#include <stdio.h>
+#include <lvgl.h>          // Обязательно: lv_obj_invalidate, lv_scr_act
+#include <stdio.h>        // Для printf
 
 #ifdef BOARD_EPAPER
     #include "board.h" 
-    // Гарантируем, что компилятор видит namespace board и переменную hl
     using namespace board; 
+    
+    // Объявляем функции получения размеров экрана, если они вдруг не видны через board.h
+    extern "C" uint16_t epd_rotated_display_width();
+    extern "C" uint16_t epd_rotated_display_height();
 #endif
 
 namespace ui::screen::settings {
@@ -30,14 +33,22 @@ static void on_language_toggle(void*) {
     
     Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
+    // 1. Помечаем экран как "грязный" для LVGL. 
+    // Это заставит библиотеку пересчитать размеры лейблов (русский текст шире английского).
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
-    // Теперь компилятор точно знает, что такое board::hl, благодаря using namespace board;
-    epd_hl_update(&hl); 
-    Serial.println("[UI] E-Paper refreshed");
+    // 2. Принудительно обновляем драйвер e-paper.
+    // ВАЖНО: Используем epd_hl_update_area вместо устаревшего epd_hl_update.
+    // Передаем координаты области: (x=0, y=0, width=..., height=...)
+    uint16_t w = epd_rotated_display_width();
+    uint16_t h = epd_rotated_display_height();
+    
+    epd_hl_update_area(&hl, 0, 0, w, h);
+    Serial.println("[UI] E-Paper refreshed via update_area");
 #else
-    lv_refr_exec();
+    // Для обычных TFT экранов достаточно стандартного цикла отрисовки
+    lv_refr_exec(); 
 #endif
 }
 
@@ -76,7 +87,6 @@ static void create(Handle parent) {
     Handle menu = list(parent);
 
 #ifdef BOARD_WIO_L1
-    // Wio Mono: используем полную локализацию
     menu_row(menu, i18n::t(i18n::T_LANGUAGE),       on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     lbl_buzzer = toggle_item(menu, i18n::t(i18n::T_BUZZER),
@@ -91,17 +101,12 @@ static void create(Handle parent) {
                              on_advert, nullptr);
     menu_row(menu, i18n::t(i18n::T_PROVISION),     on_provision, nullptr);
 #else
-    // Другие платы: T_STORAGE, T_DEBUG, T_DEVICE отсутствуют в i18n.h,
-    // поэтому оставляем хардкод для этих пунктов, чтобы код компилировался.
-    // Остальные пункты берём из i18n.
-    
     menu_row(menu, i18n::t(i18n::T_LANGUAGE),      on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     menu_row(menu, i18n::t(i18n::T_BLUETOOTH),     on_ble,     nullptr);
     menu_row(menu, i18n::t(i18n::T_GPS_SETTINGS),  on_gps,     nullptr);
     menu_row(menu, i18n::t(i18n::T_MESH_SETTINGS), on_mesh,    nullptr);
     
-    // Хардкод только для отсутствующих ключей (чтобы не ломать сборку)
     menu_row(menu, "Storage",       on_storage, nullptr); 
     menu_row(menu, "Debug",          on_debug,   nullptr); 
     menu_row(menu, "Device",         on_device,  nullptr);  

@@ -45,7 +45,7 @@ static void on_language_toggle(void*) {
     // ГЛАВНОЕ ИСПРАВЛЕНИЕ:
     // Используем EPD_DRAW_AUTO. Это стандартный режим для авто-подбора типа обновления.
     // Если эта константа тоже не найдется, открой epd_highlevel.h и скажи, какие там есть имена.
-    epd_hl_update_area(&hl, EPD_DRAW_AUTO, 25, rect); 
+    epd_hl_update_area(&hl, EPD_DRAW_FULL, 25, rect); 
     
     Serial.println("[UI] Screen refreshed (AUTO mode)");
 #else

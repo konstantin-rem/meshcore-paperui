@@ -15,10 +15,8 @@
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
-    
-    // ВАЖНО: УБРАЛИ ручное объявление extern "C". 
-    // Тип функции (int) теперь берется напрямую из lib/epdiy/src/epdiy.h.
-    // Это убирает ошибку "ambiguous".
+    // ВАЖНО: Мы НЕ пишем extern "C" здесь. 
+    // Типы функций берем напрямую из lib/epdiy/src/epdiy.h
 #endif
 
 namespace ui::screen::settings {
@@ -38,27 +36,16 @@ static void on_language_toggle(void*) {
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
-    // 2. Получаем размеры экрана. 
-    // Теперь тип int (из epdiy.h) совпадает с объявлением, ошибка ambiguous исчезнет.
-    int w = epd_rotated_display_width();
-    int h = epd_rotated_display_height();
+    // 2. Обновляем драйвер e-paper.
+    // Стратегия: передаем nullptr вместо rect.
+    // Это заставляет epdiy выполнить ПОЛНЫЙ цикл обновления экрана.
+    // Это решает проблему артефактов при смене EN->RU (русский шире).
+    // Третий аргумент (режим) в этом случае не важен, ставим 0.
+    epd_hl_update_area(&hl, nullptr, 0);
     
-    // Создаем структуру области обновления
-    EpdRect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.width = w;
-    rect.height = h;
-    
-    // 3. Вызываем обновление.
-    // В новых версиях epdiy НЕТ константы EPD_DRAW_FULL.
-    // Режим EPD_DRAW_NORMAL по умолчанию делает полный рефреш экрана для e-paper.
-    // Если нужно форсировать полный рефреш, можно передать nullptr вместо rect, 
-    // но вариант ниже универсален.
-    epd_hl_update_area(&hl, &rect, EPD_DRAW_NORMAL);
-    
-    Serial.println("[UI] E-Paper refreshed (NORMAL mode)");
+    Serial.println("[UI] E-Paper FULL refresh triggered");
 #else
+    // Для обычных экранов просто говорим LVGL перерисовать
     lv_refr_exec(); 
 #endif
 }

@@ -36,9 +36,10 @@ static void on_language_toggle(void*) {
     
     Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
+    // 👇 ВСЕ вызовы LVGL теперь ТОЛЬКО внутри #ifdef 👇
+#ifdef BOARD_EPAPER
     lv_obj_invalidate(lv_scr_act());
     
-#ifdef BOARD_EPAPER
     int w = epd_rotated_display_width();
     int h = epd_rotated_display_height();
     
@@ -48,16 +49,16 @@ static void on_language_toggle(void*) {
     rect.width = w;
     rect.height = h;
 
-    // ГЛАВНОЕ ИСПРАВЛЕНИЕ:
-    // Используем EPD_DRAW_AUTO. Это стандартный режим для авто-подбора типа обновления.
-    // Если эта константа тоже не найдется, открой epd_highlevel.h и скажи, какие там есть имена.
     epd_hl_update_area(&hl, (enum EpdDrawMode)EPD_MODE_DEFAULT, 25, rect);
     
     Serial.println("[UI] Screen refreshed (AUTO mode)");
 #else
-    lv_refr_exec(); 
+    // Для плат БЕЗ LVGL (как Wio) мы ничего не делаем с экраном.
+    // Никаких lv_refr_exec() и других функций LVGL здесь быть не должно!
+    Serial.println("[UI] Language changed (No screen refresh needed)");
 #endif
 }
+
 
 // --- Обработчики меню ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }

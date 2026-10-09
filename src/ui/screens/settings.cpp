@@ -3,18 +3,20 @@
 #include "../ui_screen_mgr.h"
 #include "../kit/ui_kit.h"
 #include "../i18n.h"
+
 #ifdef BOARD_WIO_L1
-#include "../../mesh/mesh_task.h"
+    #include "../../mesh/mesh_task.h"
 #endif
+
 #include <nvs_param.h>
-#include <lvgl.h>          // Обязательно: lv_obj_invalidate, lv_scr_act
-#include <stdio.h>        // Для printf
+#include <lvgl.h>          // Теперь эта строка сработает, так как мы собираем для t5-epaper
+#include <stdio.h>         // Для Serial.printf
 
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
     
-    // Объявляем функции получения размеров экрана, если они вдруг не видны через board.h
+    // Гарантируем видимость функций размеров экрана
     extern "C" uint16_t epd_rotated_display_width();
     extern "C" uint16_t epd_rotated_display_height();
 #endif
@@ -33,26 +35,25 @@ static void on_language_toggle(void*) {
     
     Serial.printf("Language switched to: %s\n", (next == i18n::Lang::EN) ? "EN" : "RU");
 
-    // 1. Помечаем экран как "грязный" для LVGL. 
-    // Это заставит библиотеку пересчитать размеры лейблов (русский текст шире английского).
+    // 1. Помечаем экран LVGL как "грязный". 
+    // Это критически важно: русский текст шире английского, и лейблы должны пересчитаться.
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
     // 2. Принудительно обновляем драйвер e-paper.
-    // ВАЖНО: Используем epd_hl_update_area вместо устаревшего epd_hl_update.
-    // Передаем координаты области: (x=0, y=0, width=..., height=...)
+    // ВАЖНО: Используем epd_hl_update_area (новый API epdiy v7)
     uint16_t w = epd_rotated_display_width();
     uint16_t h = epd_rotated_display_height();
     
     epd_hl_update_area(&hl, 0, 0, w, h);
     Serial.println("[UI] E-Paper refreshed via update_area");
 #else
-    // Для обычных TFT экранов достаточно стандартного цикла отрисовки
+    // Для обычных TFT экранов достаточно стандартного цикла отрисовки LVGL
     lv_refr_exec(); 
 #endif
 }
 
-// --- Остальные обработчики (без изменений) ---
+// --- Остальные обработчики ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
 static void on_mesh(void*)    { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
 static void on_display(void*) { ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }

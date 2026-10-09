@@ -32,7 +32,7 @@ static void ensure_toast() {
 
 static void on_dismiss(lv_timer_t* t) {
     if (toast_obj) {
-        lv_obj_add_flag(toast_obj, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_hidden(toast_obj, true);
     }
     if (dismiss_timer) {
         lv_timer_delete(dismiss_timer);

@@ -15,8 +15,8 @@
 #ifdef BOARD_EPAPER
     #include "board.h" 
     using namespace board; 
-    // ВАЖНО: Мы НЕ пишем extern "C" здесь. 
-    // Типы функций берем напрямую из lib/epdiy/src/epdiy.h
+    // ВАЖНО: Никаких extern "C" объявлений здесь!
+    // Типы функций берем из lib/epdiy/src/epdiy.h
 #endif
 
 namespace ui::screen::settings {
@@ -36,14 +36,26 @@ static void on_language_toggle(void*) {
     lv_obj_invalidate(lv_scr_act());
     
 #ifdef BOARD_EPAPER
-    // 2. Обновляем драйвер e-paper.
-    // Стратегия: передаем nullptr вместо rect.
-    // Это заставляет epdiy выполнить ПОЛНЫЙ цикл обновления экрана.
-    // Это решает проблему артефактов при смене EN->RU (русский шире).
-    // Третий аргумент (режим) в этом случае не важен, ставим 0.
-    epd_hl_update_area(&hl, nullptr, 0);
+    // --- ИСПРАВЛЕНИЕ ПОД НОВУЮ СИГНАТУРУ epd_hl_update_area ---
     
-    Serial.println("[UI] E-Paper FULL refresh triggered");
+    // Получаем размеры
+    int w = epd_rotated_display_width();
+    int h = epd_rotated_display_height();
+    
+    // Создаем структуру области
+    EpdRect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = w;
+    rect.height = h;
+    
+    // Вызов функции: (&hl, MODE, TEMP, RECT)
+    // EPD_DRAW_FULL делает полный рефреш, что критично для смены языка.
+    // Температура 25 - безопасное значение по умолчанию.
+    epd_hl_update_area(&hl, EPD_DRAW_FULL, 25, rect);
+    
+    Serial.println("[UI] Screen refreshed successfully");
+    
 #else
     // Для обычных экранов просто говорим LVGL перерисовать
     lv_refr_exec(); 

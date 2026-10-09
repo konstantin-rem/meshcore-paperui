@@ -40,8 +40,25 @@ static void on_language_toggle(void*) {
 
     #ifdef BOARD_EPAPER
         lv_obj_invalidate(lv_scr_act());
-        int w = epd_rotated_display_width();
-        int h = epd_rotated_display_height();
+        #ifndef MESHUI_SIM
+    // Этот код работает ТОЛЬКО на реальной плате (ESP32 + ePaper)
+    int w = epd_rotated_display_width();
+    int h = epd_rotated_display_height();
+    EpdRect rect = {0, 0, w, h};
+    epd_hl_update_area(&hl, (enum EpdDrawMode)EPD_MODE_DEFAULT, 25, rect);
+    #else
+    // В симуляторе (WASM / Host) мы НЕ вызываем драйверы дисплея.
+    // LVGL уже отрисовал всё в свой внутренний буфер.
+    // Нам ничего делать не надо.
+    
+    // Если здесь была какая-то логика, зависящая от ширины/высоты,
+    // используй константы или глобальные переменные симулятора:
+    // const int w = 540; 
+    // const int h = 960;
+    
+    // Просто оставь пустым или добавь лог для отладки:
+       lv_log_print(LV_LOG_LEVEL_INFO, "Settings screen rendered in simulator (no hardware update)\n");
+    #endif
         EpdRect rect = {0, 0, w, h};
         epd_hl_update_area(&hl, (enum EpdDrawMode)EPD_MODE_DEFAULT, 25, rect);
         Serial.println("[UI] Screen refreshed (AUTO mode)");

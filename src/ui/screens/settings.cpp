@@ -42,16 +42,15 @@ static void on_language_toggle(void*) {
     rect.y = 0;
     rect.width = w;
     rect.height = h;
+
+    // ГЛАВНОЕ ИСПРАВЛЕНИЕ: передаем 0 вместо несуществующей константы.
+    // Сигнатура: (state, mode_as_int, temperature, rect)
+    epd_hl_update_area(&hl, 0, 25, rect); 
     
-    // ВАЖНО: Используем EPD_DRAW_NORMAL вместо несуществующего EPD_DRAW_FULL.
-    // Температура 25 обязательна для этой сигнатуры.
-    epd_hl_update_area(&hl, EPD_DRAW_NORMAL, 25, rect);
-    
-    Serial.println("[UI] E-Paper refreshed (NORMAL mode)");
+    Serial.println("[UI] E-Paper refreshed (mode=0)");
 #else
     lv_refr_exec(); 
 #endif
-}
 
 // --- Обработчики меню (без изменений) ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }

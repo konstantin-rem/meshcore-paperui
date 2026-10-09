@@ -29,6 +29,7 @@ namespace ui::screen::settings {
 
 using namespace ui::kit;
 
+#ifndef BOARD_WIO_L1
 static void on_language_toggle(void*) {
     i18n::Lang current = i18n::get_lang();
     i18n::Lang next = (current == i18n::Lang::EN) ? i18n::Lang::RU : i18n::Lang::EN;

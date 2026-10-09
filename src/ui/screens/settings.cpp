@@ -9,7 +9,13 @@
 #endif
 
 #include <nvs_param.h>
-#include <lvgl.h>          
+
+// 👇 ВОТ ЭТО ИЗМЕНЕНИЕ 👇
+// Подключаем LVGL только если определена плата с экраном (или твой флаг USE_LVGL)
+#ifdef BOARD_EPAPER
+    #include <lvgl.h>
+#endif
+
 #include <stdio.h>         
 
 #ifdef BOARD_EPAPER

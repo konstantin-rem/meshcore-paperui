@@ -1,33 +1,36 @@
 #include "settings.h"
-#include "../screen_ids.h"      // SCREEN_* ids
+#include "../screen_ids.h"
 #include "../ui_screen_mgr.h"
 #include "../kit/ui_kit.h"
 #include "../i18n.h"
 #ifdef BOARD_WIO_L1
 #include "../../mesh/mesh_task.h"
 #endif
-#include <nvs_param.h> // Предполагается, что у тебя есть этот заголовок для NVS
+#include <nvs_param.h>
 
 namespace ui::screen::settings {
 
 using namespace ui::kit;
 
-// --- Логика переключения языка ---
-
+// --- Обработчик кнопки языка ---
 static void on_language_toggle(void*) {
     i18n::Lang current = i18n::get_lang();
+    // Переключаем: EN(0) <-> RU(1)
     i18n::Lang next = (current == i18n::Lang::EN) ? i18n::Lang::RU : i18n::Lang::EN;
+    
     i18n::set_lang(next);
-
-    // Сохраняем как uint8_t (0 или 1)
+    
+    // Сохраняем в NVS по новому ID
     nvs_param_set_u8(NVS_ID_LANGUAGE, static_cast<uint8_t>(next));
+    
+    Serial.printf("Language switched to: %s (saved)\n", 
+                  (next == i18n::Lang::EN) ? "EN" : "RU");
 
-    Serial.printf("Language saved to NVS ID %d, value %d\n", NVS_ID_LANGUAGE, static_cast<uint8_t>(next));
-
+    // Принудительно помечаем экран как "грязный" для перерисовки всех лейблов
     lv_obj_invalidate(lv_scr_act());
 }
-// --- Существовавшие ранее обработчики ---
 
+// --- Остальные обработчики (без изменений) ---
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
 static void on_mesh(void*)    { ui::screen_mgr::push(SCREEN_SET_MESH, true); }
 static void on_display(void*) { ui::screen_mgr::push(SCREEN_SET_DISPLAY, true); }
@@ -45,7 +48,6 @@ static void on_buzzer(void*) {
     mesh::task::set_buzzer_enabled(en);
     if (lbl_buzzer) set_text(lbl_buzzer, i18n::t(en ? i18n::T_ON : i18n::T_OFF));
 }
-
 static void on_advert(void*) {
     bool en = !mesh::task::get_advert_location();
     mesh::task::set_advert_location(en);
@@ -63,11 +65,8 @@ static void create(Handle parent) {
     Handle menu = list(parent);
 
 #ifdef BOARD_WIO_L1
-    // Wio mono build
-    
-    // ВАЖНО: Добавлен пункт "Language"
-    menu_row(menu, i18n::t(i18n::T_LANGUAGE), on_language_toggle, nullptr);
-
+    // Wio Mono: используем полную локализацию
+    menu_row(menu, i18n::t(i18n::T_LANGUAGE),       on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     lbl_buzzer = toggle_item(menu, i18n::t(i18n::T_BUZZER),
                              i18n::t(mesh::task::get_buzzer_enabled() ? i18n::T_ON : i18n::T_OFF),
@@ -80,22 +79,21 @@ static void create(Handle parent) {
                              i18n::t(mesh::task::get_advert_location() ? i18n::T_ON : i18n::T_OFF),
                              on_advert, nullptr);
     menu_row(menu, i18n::t(i18n::T_PROVISION),     on_provision, nullptr);
-
 #else
-    // Non-Wio builds
+    // Другие платы: T_STORAGE, T_DEBUG, T_DEVICE отсутствуют в i18n.h,
+    // поэтому оставляем хардкод для этих пунктов, чтобы код компилировался.
+    // Остальные пункты берём из i18n.
     
-    // ИСПРАВЛЕНО: Заменил хардкод на i18n::t()
+    menu_row(menu, i18n::t(i18n::T_LANGUAGE),      on_language_toggle, nullptr);
     menu_row(menu, i18n::t(i18n::T_DISPLAY),       on_display, nullptr);
     menu_row(menu, i18n::t(i18n::T_BLUETOOTH),     on_ble,     nullptr);
     menu_row(menu, i18n::t(i18n::T_GPS_SETTINGS),  on_gps,     nullptr);
     menu_row(menu, i18n::t(i18n::T_MESH_SETTINGS), on_mesh,    nullptr);
     
-    // ДОБАВЛЕНО: Пункт языка и остальные пункты тоже через i18n
-    menu_row(menu, i18n::t(i18n::T_LANGUAGE),      on_language_toggle, nullptr);
-    
-    menu_row(menu, i18n::t(i18n::T_STORAGE),       on_storage, nullptr); // Убедись, что T_STORAGE есть в i18n.h, если нет - используй хардкод или добавь туда
-    menu_row(menu, i18n::t(i18n::T_DEBUG),         on_debug,   nullptr); // Аналогично, проверь наличие T_DEBUG
-    menu_row(menu, i18n::t(i18n::T_DEVICE),        on_device,  nullptr);  // Аналогично
+    // Хардкод только для отсутствующих ключей (чтобы не ломать сборку)
+    menu_row(menu, "Storage",       on_storage, nullptr); 
+    menu_row(menu, "Debug",          on_debug,   nullptr); 
+    menu_row(menu, "Device",         on_device,  nullptr);  
 #endif
 }
 

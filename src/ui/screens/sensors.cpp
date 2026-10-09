@@ -351,8 +351,8 @@ static void render_card_body(int idx) {
     if (plain_text) {
         lv_label_set_text(card_body_labels[idx], plain_text);
         lv_obj_clear_flag(card_body_labels[idx], LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(card_metrics_wraps[idx], LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(card_meta_labels[idx], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_hidden(card_metrics_wraps[idx], true);
+        lv_obj_set_hidden(card_meta_labels[idx], true);
         return;
     }
 
@@ -360,7 +360,7 @@ static void render_card_body(int idx) {
     lv_obj_add_flag(card_body_labels[idx], LV_OBJ_FLAG_HIDDEN);
 
     if (metric_count > 0) {
-        lv_obj_clear_flag(card_metrics_wraps[idx], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_hidden(card_metrics_wraps[idx], false); // вместо clear_flag
     } else {
         lv_obj_add_flag(card_metrics_wraps[idx], LV_OBJ_FLAG_HIDDEN);
     }
@@ -1043,9 +1043,9 @@ static void ensure_row(int idx) {
         lv_obj_set_style_pad_hor(pill, SENSOR_METRIC_PAD_H, LV_PART_MAIN);
         lv_obj_set_style_pad_ver(pill, SENSOR_METRIC_PAD_V, LV_PART_MAIN);
         lv_obj_set_style_pad_row(pill, SENSOR_METRIC_ROW_PAD, LV_PART_MAIN);
-        lv_obj_clear_flag(pill, LV_OBJ_FLAG_SCROLLABLE);
-        lv_obj_add_flag(pill, LV_OBJ_FLAG_EVENT_BUBBLE);
-        lv_obj_add_flag(pill, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_scrollable(pill, false);
+        lv_obj_set_event_bubble(pill, true);
+        lv_obj_set_hidden(pill, true);
         lv_obj_set_flex_flow(pill, LV_FLEX_FLOW_COLUMN);
         lv_obj_set_flex_align(pill, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
@@ -1056,7 +1056,7 @@ static void ensure_row(int idx) {
         lv_obj_set_style_text_opa(name, LV_OPA_70, LV_PART_MAIN);
         lv_label_set_long_mode(name, LV_LABEL_LONG_WRAP);
         lv_label_set_text(name, "");
-        lv_obj_add_flag(name, LV_OBJ_FLAG_EVENT_BUBBLE);
+        lv_obj_set_event_bubble(name, true);
 
         lv_obj_t* value = lv_label_create(pill);
         lv_obj_set_width(value, lv_pct(100));
@@ -1064,7 +1064,7 @@ static void ensure_row(int idx) {
         lv_obj_set_style_text_color(value, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
         lv_label_set_long_mode(value, LV_LABEL_LONG_WRAP);
         lv_label_set_text(value, "");
-        lv_obj_add_flag(value, LV_OBJ_FLAG_EVENT_BUBBLE);
+        lv_obj_set_event_bubble(value, true);
 
         card_metric_pills[idx][i] = pill;
         card_metric_name_labels[idx][i] = name;
@@ -1077,8 +1077,8 @@ static void ensure_row(int idx) {
     lv_obj_set_style_text_opa(meta, LV_OPA_70, LV_PART_MAIN);
     lv_obj_set_width(meta, lv_pct(100));
     lv_label_set_long_mode(meta, LV_LABEL_LONG_WRAP);
-    lv_obj_add_flag(meta, LV_OBJ_FLAG_EVENT_BUBBLE);
-    lv_obj_add_flag(meta, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_event_bubble(meta, true);
+    lv_obj_set_hidden(meta, true);
 
     card_rows[idx] = row;
     card_name_labels[idx] = name;
@@ -1088,7 +1088,7 @@ static void ensure_row(int idx) {
     card_state_pills[idx] = pill;
     card_state_labels[idx] = state;
     row_visible[idx] = false;
-    lv_obj_add_flag(row, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_hidden(row, true);
 }
 
 static bool sync_cards_from_model() {
@@ -1188,7 +1188,7 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_text_color(empty_label, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_obj_set_style_text_align(empty_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
     lv_label_set_text(empty_label, "\n\nNo sensors yet");
-    lv_obj_add_flag(empty_label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_hidden(empty_label, true);
 }
 
 static void entry() {

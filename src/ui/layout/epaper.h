@@ -27,7 +27,7 @@
 #define UI_STATUSBAR_BOTTOM  (UI_STATUSBAR_Y + UI_STATUSBAR_HEIGHT - 5)
 
 // Back button
-#define UI_BACK_BTN_HEIGHT   70
+#define UI_BACK_BTN_HEIGHT   60
 
 // Gap between nav bar and content container (flex row gap)
 #define UI_NAV_CONTENT_GAP   0
@@ -36,7 +36,7 @@
 #define UI_BACK_BTN_COL_PAD  8
 
 // Menu / list items
-#define UI_MENU_ITEM_HEIGHT  85
+#define UI_MENU_ITEM_HEIGHT  60
 #define UI_MENU_ITEM_PAD     15
 #define UI_MENU_ITEM_INSET   15
 

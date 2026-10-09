@@ -9,7 +9,7 @@
 #define UI_FONT_TITLE       &lv_font_montserrat_bold_30
 #define UI_FONT_NAV         &lv_font_noto_28
 #define UI_FONT_CLOCK_SM    &lv_font_montserrat_bold_80
-#define UI_FONT_CLOCK_LG    &lv_font_montserrat_bold_120
+#define UI_FONT_CLOCK_LG    &lv_font_montserrat_bold_80
 
 // ---------- Shared components ----------
 
@@ -41,7 +41,7 @@
 #define UI_MENU_ITEM_INSET   15
 
 // Text button
-#define UI_TEXT_BTN_HEIGHT   80
+#define UI_TEXT_BTN_HEIGHT   60
 #define UI_TEXT_BTN_PAD      15
 #define UI_TEXT_BTN_RADIUS   12
 #define UI_TEXT_BTN_BORDER   3

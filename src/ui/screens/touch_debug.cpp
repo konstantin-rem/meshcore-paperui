@@ -19,7 +19,6 @@ static void draw_crosshair(int16_t x, int16_t y) {
     if (!crosshair_h || !crosshair_v || !dot) return;
     
     lv_obj_set_pos(crosshair_h, 0, y);
-    // ИСПРАВЛЕНО: вместо clear_flag используем set_hidden
     lv_obj_set_hidden(crosshair_h, false); 
     
     lv_obj_set_pos(crosshair_v, x, 0);
@@ -57,8 +56,11 @@ static void create(ui::kit::Handle parent_kit) {
 
     // Remove all padding so canvas is truly 0,0 based
     lv_obj_set_style_pad_all(parent, 0, LV_PART_MAIN);
-    // ИСПРАВЛЕНО: используем remove_flag вместо clear_flag
-    lv_obj_remove_flag(parent, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
+    
+    // ИСПРАВЛЕНО: Флаг FLEX_IN_NEW_TRACK часто избыточен при абсолютном позиционировании.
+    // В новых LVGL нет прямого сеттера для его удаления, но если он мешает, 
+    // лучше просто не добавлять его изначально или игнорировать. 
+    // Оставляем только явное управление потоком.
     lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_COLUMN);
 
     int32_t w = lv_display_get_horizontal_resolution(lv_display_get_default());
@@ -72,7 +74,9 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_bg_opa(canvas, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_set_style_border_width(canvas, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(canvas, 0, LV_PART_MAIN);
-    lv_obj_clear_flag(canvas, LV_OBJ_FLAG_SCROLLABLE);
+    
+    // ИСПРАВЛЕНО: вместо remove_flag используем явный сеттер
+    lv_obj_set_scrollable(canvas, false);
 
     // Grid lines every 40px
     for (int gx = 40; gx < w; gx += 40) {
@@ -83,8 +87,10 @@ static void create(ui::kit::Handle parent_kit) {
         lv_obj_set_style_bg_opa(line, LV_OPA_40, LV_PART_MAIN);
         lv_obj_set_style_border_width(line, 0, LV_PART_MAIN);
         lv_obj_set_style_pad_all(line, 0, LV_PART_MAIN);
-        // ИСПРАВЛЕНО: удаляем сразу два флага через remove_flag
-        lv_obj_remove_flag(line, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+        
+        // ИСПРАВЛЕНО: убираем скролл и клики через сеттеры
+        lv_obj_set_scrollable(line, false);
+        lv_obj_set_clickable(line, false);
     }
     for (int gy = 40; gy < h; gy += 40) {
         lv_obj_t* line = lv_obj_create(canvas);
@@ -94,7 +100,9 @@ static void create(ui::kit::Handle parent_kit) {
         lv_obj_set_style_bg_opa(line, LV_OPA_40, LV_PART_MAIN);
         lv_obj_set_style_border_width(line, 0, LV_PART_MAIN);
         lv_obj_set_style_pad_all(line, 0, LV_PART_MAIN);
-        lv_obj_remove_flag(line, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+        
+        lv_obj_set_scrollable(line, false);
+        lv_obj_set_clickable(line, false);
     }
 
     // Corner labels showing coordinates at their actual position (40px inward)
@@ -133,8 +141,11 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_bg_color(crosshair_h, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_obj_set_style_border_width(crosshair_h, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(crosshair_h, 0, LV_PART_MAIN);
-    lv_obj_remove_flag(crosshair_h, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
-    // ИСПРАВЛЕНО: скрываем через set_hidden
+    
+    // ИСПРАВЛЕНО: отключаем скролл и клики
+    lv_obj_set_scrollable(crosshair_h, false);
+    lv_obj_set_clickable(crosshair_h, false);
+    
     lv_obj_set_hidden(crosshair_h, true); 
 
     crosshair_v = lv_obj_create(canvas);
@@ -142,7 +153,10 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_bg_color(crosshair_v, lv_color_hex(EPD_COLOR_TEXT), LV_PART_MAIN);
     lv_obj_set_style_border_width(crosshair_v, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(crosshair_v, 0, LV_PART_MAIN);
-    lv_obj_remove_flag(crosshair_v, (lv_obj_flag_t)(LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE));
+    
+    lv_obj_set_scrollable(crosshair_v, false);
+    lv_obj_set_clickable(crosshair_v, false);
+    
     lv_obj_set_hidden(crosshair_v, true);
 
     dot = lv_obj_create(canvas);
@@ -151,8 +165,10 @@ static void create(ui::kit::Handle parent_kit) {
     lv_obj_set_style_radius(dot, LV_RADIUS_CIRCLE, LV_PART_MAIN);
     lv_obj_set_style_border_width(dot, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(dot, 0, LV_PART_MAIN);
+    
     lv_obj_set_scrollable(dot, false);
     lv_obj_set_clickable(dot, false);
+    
     lv_obj_set_hidden(dot, true);
 
     // Coordinate readout

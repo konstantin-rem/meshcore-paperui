@@ -15,22 +15,17 @@ using namespace ui::kit;
 // --- Логика переключения языка ---
 
 static void on_language_toggle(void*) {
-    // 1. Переключаем язык
     i18n::Lang current = i18n::get_lang();
     i18n::Lang next = (current == i18n::Lang::EN) ? i18n::Lang::RU : i18n::Lang::EN;
     i18n::set_lang(next);
 
-    // 2. Сохраняем в NVS (используй свой ID ключа, если он отличается от NVS_ID_LANGUAGE)
+    // Сохраняем как uint8_t (0 или 1)
     nvs_param_set_u8(NVS_ID_LANGUAGE, static_cast<uint8_t>(next));
 
-    Serial.printf("Language switched to: %s\n", 
-                  (next == i18n::Lang::EN) ? "EN" : "RU");
+    Serial.printf("Language saved to NVS ID %d, value %d\n", NVS_ID_LANGUAGE, static_cast<uint8_t>(next));
 
-    // 3. Инвалидируем весь экран. 
-    // ui::kit работает поверх LVGL, поэтому берем активный экран LVGL напрямую.
     lv_obj_invalidate(lv_scr_act());
 }
-
 // --- Существовавшие ранее обработчики ---
 
 static void on_gps(void*)     { ui::screen_mgr::push(SCREEN_SET_GPS, true); }
